@@ -1,10 +1,9 @@
-Futurezero v1 · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FUture Zero Consulting Ltd</title>
+<title>Future Zero Consulting Limited</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -23,7 +22,7 @@ Futurezero v1 · HTML
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body { font-family: var(--sans); background: var(--white); color: var(--black); font-size: 16px; line-height: 1.7; overflow-x: hidden; }
- 
+
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
@@ -43,20 +42,21 @@ Futurezero v1 · HTML
   .nav-cta:hover { background: var(--green-mid); transform: translateY(-1px); }
   .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
   .hamburger span { display: block; width: 22px; height: 2px; background: var(--green); border-radius: 2px; }
- 
+
   #home { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding-top: 5rem; position: relative; overflow: hidden; }
   .hero-left { display: flex; flex-direction: column; justify-content: center; padding: 6vw 3vw 6vw 6vw; }
   .hero-eyebrow { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green-mid); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
   .hero-eyebrow::before { content: ''; display: block; width: 2rem; height: 1px; background: var(--green-mid); }
   h1 { font-family: var(--serif); font-size: clamp(2.8rem, 5vw, 4.5rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--black); margin-bottom: 1.5rem; }
   h1 em { color: var(--green); font-style: italic; }
+  .hero-tagline { font-size: 1.05rem; color: var(--green); font-weight: 500; font-style: italic; margin-bottom: 0.75rem; }
   .hero-sub { font-size: 1.1rem; color: var(--muted); font-weight: 300; max-width: 38ch; margin-bottom: 2.5rem; line-height: 1.75; }
   .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
   .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--green); color: var(--white); padding: 0.875rem 2rem; border-radius: 3rem; font-size: 0.9rem; font-weight: 500; text-decoration: none; transition: all 0.2s; }
   .btn-primary:hover { background: var(--green-mid); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,92,58,0.25); }
   .btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--green); font-size: 0.9rem; font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--green-light); padding-bottom: 2px; transition: border-color 0.2s; }
   .btn-secondary:hover { border-color: var(--green); }
- 
+
   .hero-right { position: relative; background: var(--green); display: flex; align-items: flex-end; justify-content: center; overflow: hidden; padding: 4rem 3rem 3rem; }
   .hero-bg-pattern { position: absolute; inset: 0; background-image: radial-gradient(circle at 30% 20%, rgba(79,190,133,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 40%); }
   .hero-grid-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 40px 40px; }
@@ -65,14 +65,14 @@ Futurezero v1 · HTML
   .stat-cell:hover { background: rgba(14,18,16,0.45); }
   .stat-num { font-family: var(--serif); font-size: 2.5rem; color: var(--white); line-height: 1; margin-bottom: 0.4rem; }
   .stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.4; font-weight: 300; }
- 
+
   section { padding: 6rem 6vw; }
   .section-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green-mid); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; }
   .section-label::before { content: ''; display: block; width: 2rem; height: 1px; background: var(--green-mid); }
   h2 { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
   h2 em { color: var(--green); font-style: italic; }
   .lead { font-size: 1.1rem; color: var(--muted); font-weight: 300; max-width: 55ch; line-height: 1.75; }
- 
+
   #about { background: var(--stone); }
   .about-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5vw; align-items: start; margin-top: 3rem; }
   .about-left { position: sticky; top: 7rem; }
@@ -85,7 +85,7 @@ Futurezero v1 · HTML
   .badge { font-size: 0.75rem; font-weight: 500; padding: 0.35rem 0.85rem; border-radius: 2rem; background: var(--green-light); color: var(--green); white-space: nowrap; }
   .about-right p { color: var(--muted); margin-bottom: 1.25rem; font-weight: 300; font-size: 1.0rem; }
   .about-right p:first-child { font-size: 1.1rem; color: var(--black); font-weight: 400; }
- 
+
   #services { background: var(--white); }
   .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5px; margin-top: 3rem; background: var(--stone); border: 1.5px solid var(--stone); border-radius: 0.75rem; overflow: hidden; }
   .service-card { background: var(--white); padding: 2.25rem 2rem; transition: background 0.2s; }
@@ -93,7 +93,7 @@ Futurezero v1 · HTML
   .service-icon { width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; background: var(--green-light); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; font-size: 1.1rem; }
   .service-card h3 { font-family: var(--serif); font-size: 1.3rem; margin-bottom: 0.75rem; color: var(--black); }
   .service-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
- 
+
   #portfolio { background: var(--black); color: var(--white); }
   #portfolio .section-label { color: var(--green-accent); }
   #portfolio .section-label::before { background: var(--green-accent); }
@@ -107,7 +107,7 @@ Futurezero v1 · HTML
   .project-info h3 { font-family: var(--serif); font-size: 1.35rem; color: var(--white); margin-bottom: 0.35rem; }
   .project-info p { font-size: 0.875rem; color: rgba(255,255,255,0.45); line-height: 1.6; font-weight: 300; }
   .project-tag { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-accent); white-space: nowrap; align-self: flex-start; margin-top: 0.3rem; }
- 
+
   #insights { background: var(--stone); }
   .insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
   .insight-card { background: var(--white); border-radius: 0.75rem; padding: 2rem; transition: transform 0.2s, box-shadow 0.2s; }
@@ -117,7 +117,7 @@ Futurezero v1 · HTML
   .insight-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; font-weight: 300; }
   .insight-link { display: inline-block; margin-top: 1.25rem; font-size: 0.85rem; color: var(--green); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--green-light); transition: border-color 0.2s; }
   .insight-link:hover { border-color: var(--green); }
- 
+
   #contact { background: var(--green); display: grid; grid-template-columns: 1fr 1fr; gap: 6vw; align-items: center; padding: 7rem 6vw; }
   .contact-left .section-label { color: var(--green-accent); }
   .contact-left .section-label::before { background: var(--green-accent); }
@@ -139,16 +139,16 @@ Futurezero v1 · HTML
   .form-group textarea { resize: vertical; min-height: 120px; }
   .btn-submit { background: var(--white); color: var(--green); border: none; border-radius: 3rem; padding: 1rem 2.5rem; font-family: var(--sans); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s; align-self: flex-start; }
   .btn-submit:hover { background: var(--green-accent); color: var(--black); transform: translateY(-2px); }
- 
+
   footer { background: var(--black); color: rgba(255,255,255,0.35); padding: 2.5rem 6vw; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; }
   .footer-logo { font-family: var(--serif); color: rgba(255,255,255,0.6); font-size: 1rem; }
   .footer-logo span { color: var(--green-accent); }
   footer a { color: rgba(255,255,255,0.35); text-decoration: none; }
   footer a:hover { color: var(--green-accent); }
- 
+
   .fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
   .fade-up.visible { opacity: 1; transform: translateY(0); }
- 
+
   @media (max-width: 900px) {
     #home { grid-template-columns: 1fr; min-height: auto; }
     .hero-right { min-height: 340px; padding: 3rem 2rem; }
@@ -170,9 +170,9 @@ Futurezero v1 · HTML
 </style>
 </head>
 <body>
- 
+
 <nav id="navbar">
-  <a href="#home" class="nav-logo">F<span>U</span>ture Zero</a>
+  <a href="#home" class="nav-logo">Future Zero Consulting <span>Limited</span></a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#services">Services</a></li>
@@ -184,14 +184,15 @@ Futurezero v1 · HTML
     <span></span><span></span><span></span>
   </button>
 </nav>
- 
+
 <section id="home">
   <div class="hero-left">
     <p class="hero-eyebrow">Energy consulting</p>
     <h1>Accelerating the <em>clean energy</em> transition.</h1>
-    <p class="hero-sub">Expert strategy, advisory and project leadership for the energy transition — from national grids to remote island microgrids.</p>
+    <p class="hero-tagline">Putting society at the heart of the energy transition.</p>
+    <p class="hero-sub">Expert strategy, advisory and project leadership for the energy transition — from national grids to remote island microgrids, across 20+ countries.</p>
     <div class="hero-actions">
-      <a href="#contact" class="btn-primary">Discuss your project →</a>
+      <a href="#contact" class="btn-primary">Discuss your idea →</a>
       <a href="#services" class="btn-secondary">Our services</a>
     </div>
   </div>
@@ -206,13 +207,20 @@ Futurezero v1 · HTML
     </div>
   </div>
 </section>
- 
+
 <section id="about">
   <div class="section-label fade-up">About</div>
   <div class="about-grid">
     <div class="about-left fade-up">
       <div class="about-portrait">
-        <img src="IMG_4161.jpeg" alt="Prof Andrew Crossland" style="width:100%;height:100%;object-fit:cover;object-position:top;">
+        <!-- TO ADD YOUR PHOTO: replace the div below with <img src="photo.jpg" alt="Prof Andrew Crossland" style="width:100%;height:100%;object-fit:cover;object-position:top;"> and put your photo file in the same folder as index.html -->
+        <div class="portrait-placeholder">
+          <span class="portrait-initials">AC</span>
+          <div class="portrait-note">
+            <strong>Prof Andrew Crossland CEng FEI</strong>
+            Founder, FUture Zero Consulting Ltd
+          </div>
+        </div>
       </div>
       <div class="credentials">
         <span class="badge">PhD Durham</span>
@@ -226,15 +234,15 @@ Futurezero v1 · HTML
     </div>
     <div class="about-right fade-up">
       <h2>Energy <em>Strategist.</em></h2>
-      <p>My mission is to enable global decarbonisation — making energy more affordable and empowering people to take ownership of their energy future. I've delivered groundbreaking low-carbon projects across four continents, pioneering strategies and innovations that are shaping the future of energy.</p>
-      <p>My career began with a PhD at Durham University, researching solar and battery systems across over 9,000 low-voltage networks — work that identified grid savings exceeding £1bn and predicted the rise of the domestic battery market. I founded MyGridGB during this time to bring greater transparency to GB energy data.</p>
-      <p>Since then I've worked at SolarCentury (winning Energy UK's Rising Star award), created the MCS Solar/Battery Self-Consumption Standard now used in every UK solar quote, led Pacific Islands microgrid programmes for Infratec, and managed the replatforming of SolarZero's 15,000-battery virtual power plant onto machine learning in New Zealand.</p>
-      <p>I am a Professor in Practice in the Durham University Energy Institute and a Chartered Member of the IET. I've appeared on the BBC, given evidence to the UK Government on Clean Power, and authored <em>Decarbonising Electricity: Made Simple</em> — sold in 15 countries.</p>
+      <p>Energy strategist with 15+ years' experience shaping national decarbonisation pathways, infrastructure investment, and power system strategy across the globe. Trusted advisor to industry leaders, regulators and policymakers — with a track record of influencing policy and delivering over $200m in energy investments across 20+ countries.</p>
+      <p>Currently serving as Senior Operability Lead at the National Energy System Operator (NESO), coordinating whole-system operability strategy aligned with the UK's Clean Power 2030 targets, and advising DESNZ and Ofgem on critical pathways including long-duration storage, CCS and BECCS.</p>
+      <p>My career spans SolarCentury (Energy UK Rising Star award), creating the MCS Solar/Battery Self-Consumption Standard used in every UK solar quote, leading Pacific Islands microgrid programmes for Infratec, building a 500MW+ battery portfolio at Renewco Power, and managing the replatforming of SolarZero's 15,000-battery virtual power plant onto machine learning in New Zealand.</p>
+      <p>I am a Professor in Practice at Durham University Energy Institute, a Fellow of the Energy Institute (Eminence Route), and a Chartered Engineer (IET). I've advised UK and New Zealand Ministers and Parliamentarians, appeared on the BBC, and authored <em>Decarbonising Electricity: Made Simple</em>, published by Routledge.</p>
       <div style="margin-top:2rem;"><a href="#contact" class="btn-primary">Work with me →</a></div>
     </div>
   </div>
 </section>
- 
+
 <section id="services">
   <div class="section-label fade-up">Services</div>
   <h2 class="fade-up">Expert guidance for every stage of the <em>energy transition.</em></h2>
@@ -248,21 +256,22 @@ Futurezero v1 · HTML
     <div class="service-card"><div class="service-icon">🎤</div><h3>Speaking &amp; training</h3><p>Keynotes, workshops, university lectures and media appearances on the energy transition, grid modernisation and storage.</p></div>
   </div>
 </section>
- 
+
 <section id="portfolio">
   <div class="section-label fade-up">Portfolio</div>
   <h2 class="fade-up">Real delivery, at scale, <em>across the world.</em></h2>
   <p class="lead fade-up">Selected career highlights — from New Zealand's first utility-scale battery to consumer standards protecting half a million UK homes.</p>
   <div class="projects">
-    <div class="project-row fade-up"><span class="project-num">01</span><div class="project-info"><h3>Rotohiko Battery — New Zealand</h3><p>New Zealand's first utility-scale battery at 35MW/35MWh. Led development from concept through financial close — commercial modelling, engineering design, procurement and risk assessment.</p></div><span class="project-tag">BESS · NZ</span></div>
-    <div class="project-row fade-up"><span class="project-num">02</span><div class="project-info"><h3>SolarZero Virtual Power Plant</h3><p>Led replatforming of 15,000 residential batteries onto machine learning. 99% of customers within /month of optimal energy bill. 8,000 batteries programmed to support the national grid.</p></div><span class="project-tag">VPP · NZ</span></div>
-    <div class="project-row fade-up"><span class="project-num">03</span><div class="project-info"><h3>Pacific Islands Microgrids</h3><p>Bid manager on 2.5m of solar and battery projects across 7 Tongan islands, plus Nauru, Tuvalu, Palau, The Marshall Islands, Vanuatu, Cook Islands, Micronesia and Kiribati.</p></div><span class="project-tag">Microgrid · Pacific</span></div>
-    <div class="project-row fade-up"><span class="project-num">04</span><div class="project-info"><h3>MCS Self-Consumption Standard — UK</h3><p>A standard developed with Loughborough University and MCS, now applied to every solar and battery quote in the UK, protecting 500,000+ households from misselling since 2019.</p></div><span class="project-tag">Policy · UK</span></div>
-    <div class="project-row fade-up"><span class="project-num">05</span><div class="project-info"><h3>IKEA &amp; Kingfisher — First UK battery launches</h3><p>Delivered some of the UK's first residential and commercial battery-solar products. 50% of IKEA home solar sales, and the UK's first net zero retail store in 2018.</p></div><span class="project-tag">Storage · UK</span></div>
-    <div class="project-row fade-up"><span class="project-num">06</span><div class="project-info"><h3>Project PARC — Kenya</h3><p>Strategic adviser since founding. Microgrids that fund water and farming infrastructure within local Kenyan communities — energy for common good.</p></div><span class="project-tag">Microgrid · Africa</span></div>
+    <div class="project-row fade-up"><span class="project-num">01</span><div class="project-info"><h3>Grid Operability for Clean Power</h3><p>From programming 8,000 New Zealand batteries to stabilise a grid in transition, to designing island microgrids that run on 100% renewables across the Pacific, to leading the UK's national operability strategy at NESO — a career built on making clean energy systems actually work at scale.</p></div><span class="project-tag">Operability · Global</span></div>
+    <div class="project-row fade-up"><span class="project-num">02</span><div class="project-info"><h3>Rotohiko Battery — New Zealand</h3><p>New Zealand's first utility-scale battery at 35MW/35MWh. Led development from concept through financial close — commercial modelling, engineering design, procurement and risk assessment for Infratec/WEL Networks.</p></div><span class="project-tag">BESS · NZ</span></div>
+    <div class="project-row fade-up"><span class="project-num">03</span><div class="project-info"><h3>SolarZero Virtual Power Plant</h3><p>Led replatforming of 15,000 residential batteries onto machine learning, enabling 99% of customers to reach within $1/month of optimal energy bill, and programming 8,000 batteries to support the national grid.</p></div><span class="project-tag">VPP · NZ</span></div>
+    <div class="project-row fade-up"><span class="project-num">04</span><div class="project-info"><h3>Pacific Islands Microgrids</h3><p>Lead bid manager on $50m+ pipeline of microgrid projects with 80% bid success rate — including 7 islands in Tonga, 4 sites in the Solomon Islands, and major projects in Tuvalu, Nauru, Palau, Vanuatu, Cook Islands, Micronesia and Kiribati.</p></div><span class="project-tag">Microgrid · Pacific</span></div>
+    <div class="project-row fade-up"><span class="project-num">05</span><div class="project-info"><h3>MCS Self-Consumption Standard — UK</h3><p>A standard developed with Loughborough University and MCS, now applied to every solar and battery quote in the UK, protecting 500,000+ households from misselling since 2019.</p></div><span class="project-tag">Policy · UK</span></div>
+    <div class="project-row fade-up"><span class="project-num">06</span><div class="project-info"><h3>IKEA &amp; Kingfisher — First UK battery launches</h3><p>Delivered some of the UK's first residential and commercial battery-solar products. 50% of IKEA home solar sales, and the UK's first fully decarbonised retail site in 2018.</p></div><span class="project-tag">Storage · UK</span></div>
+    <div class="project-row fade-up"><span class="project-num">07</span><div class="project-info"><h3>Project PARC — Kenya</h3><p>Senior adviser since founding. Commercial models for high-power microgrids across East Africa, supporting multi-million-dollar investments in decentralised systems that fund water and farming infrastructure for local communities.</p></div><span class="project-tag">Microgrid · Africa</span></div>
   </div>
 </section>
- 
+
 <section id="insights">
   <div class="section-label fade-up">Insights &amp; media</div>
   <h2 class="fade-up">Thought leadership from <em>the frontline.</em></h2>
@@ -274,7 +283,7 @@ Futurezero v1 · HTML
     <div class="insight-card fade-up"><div class="insight-type">Academic</div><h3>15+ journal papers &amp; 3 book chapters</h3><p>Associate Professor in Practice at Durham University Energy Institute, sitting on the Advisory Board alongside leading figures in UK energy.</p><a href="https://www.durham.ac.uk/research/institutes-and-centres/durham-energy-institute/" target="_blank" class="insight-link">Durham Energy Institute →</a><br><a href="https://www.researchgate.net/profile/Andrew-Crossland?ev=hdr_xprf" target="_blank" class="insight-link" style="margin-top:0.5rem;">ResearchGate profile →</a></div>
   </div>
 </section>
- 
+
 <section id="contact">
   <div class="contact-left fade-up">
     <div class="section-label">Contact</div>
@@ -295,13 +304,13 @@ Futurezero v1 · HTML
     <button type="submit" class="btn-submit">Send message →</button>
   </form>
 </section>
- 
+
 <footer>
-  <span class="footer-logo">F<span>U</span>ture Zero Consulting Ltd</span>
+  <span class="footer-logo">Future Zero Consulting <span>Limited</span></span>
   <span>Registered in England &amp; Wales</span>
-  <span>© 2026 FUture Zero Consulting Ltd</span>
+  <span>© 2026 Future Zero Consulting Limited</span>
 </footer>
- 
+
 <script>
 window.addEventListener('scroll', () => {
   document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
@@ -331,4 +340,3 @@ function toggleMenu() {
 </script>
 </body>
 </html>
- 
