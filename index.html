@@ -90,7 +90,7 @@
   #about { background: var(--stone); }
   .about-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5vw; align-items: start; margin-top: 3rem; }
   .about-left { position: sticky; top: 7rem; }
-  .about-portrait { width: 100%; height: min(52vh, 420px); border-radius: 0.5rem; overflow: hidden; margin-bottom: 1.5rem; }
+  .about-portrait { width: 100%; border-radius: 0.5rem; overflow: hidden; margin-bottom: 1.5rem; }
   .credentials { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .badge { font-size: 0.75rem; font-weight: 500; padding: 0.35rem 0.85rem; border-radius: 2rem; background: var(--green-light); color: var(--green); white-space: nowrap; }
   .about-right p { color: var(--muted); margin-bottom: 1.25rem; font-weight: 300; font-size: 1.0rem; }
@@ -238,7 +238,7 @@
   <div class="about-grid">
     <div class="about-left fade-up">
       <div class="about-portrait">
-        <img src="d90d2b90-bb66-469e-8f88-d4d883fa743b.jpeg" alt="Prof Andrew Crossland" style="width:100%;height:100%;object-fit:cover;object-position:top;">
+        <img src="d90d2b90-bb66-469e-8f88-d4d883fa743b.jpeg" alt="Prof Andrew Crossland" style="width:100%;height:auto;max-height:min(52vh,420px);object-fit:contain;object-position:top left;display:block;">
       </div>
       <div class="credentials">
         <span class="badge">PhD Durham</span>
