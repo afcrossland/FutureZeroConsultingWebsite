@@ -118,6 +118,20 @@
   .project-info p { font-size: 0.875rem; color: rgba(255,255,255,0.45); line-height: 1.6; font-weight: 300; }
   .project-tag { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-accent); white-space: nowrap; align-self: flex-start; margin-top: 0.3rem; }
 
+  #platforms { background: var(--white); }
+  .platforms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+  .platform-card { border-radius: 0.75rem; border: 1.5px solid var(--stone); padding: 2.5rem; display: flex; flex-direction: column; transition: box-shadow 0.2s, transform 0.2s; }
+  .platform-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(14,18,16,0.09); }
+  .platform-geo { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green-mid); margin-bottom: 1rem; }
+  .platform-card h3 { font-family: var(--serif); font-size: 1.6rem; margin-bottom: 0.75rem; line-height: 1.2; }
+  .platform-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; font-weight: 300; flex: 1; }
+  .platform-features { margin: 1.25rem 0; display: flex; flex-direction: column; gap: 0.4rem; }
+  .platform-feature { font-size: 0.825rem; color: var(--muted); display: flex; align-items: center; gap: 0.6rem; }
+  .platform-feature::before { content: ''; display: block; width: 5px; height: 5px; border-radius: 50%; background: var(--green-accent); flex-shrink: 0; }
+  .platform-link { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 1.75rem; font-size: 0.9rem; color: var(--green); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--green-light); transition: border-color 0.2s; align-self: flex-start; }
+  .platform-link:hover { border-color: var(--green); }
+  @media (max-width: 700px) { .platforms-grid { grid-template-columns: 1fr; } }
+
   #insights { background: var(--stone); }
   .insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
   .insight-card { background: var(--white); border-radius: 0.75rem; padding: 2rem; transition: transform 0.2s, box-shadow 0.2s; }
@@ -187,6 +201,7 @@
     <li><a href="#about">About</a></li>
     <li><a href="#services">Services</a></li>
     <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#platforms">Platforms</a></li>
     <li><a href="#insights">Insights</a></li>
   </ul>
   <a href="#contact" class="nav-cta">Get in touch</a>
@@ -273,14 +288,48 @@
   </div>
 </section>
 
+<section id="platforms">
+  <div class="section-label fade-up">Electricity tracking &amp; scenario planning</div>
+  <h2 class="fade-up">Live grid data and <em>future scenarios</em> for GB and NZ.</h2>
+  <p class="lead fade-up">Two independent public platforms built to make electricity data accessible — tracking real-time generation, carbon intensity, and the pace of the clean energy transition.</p>
+  <div class="platforms-grid">
+
+    <div class="platform-card fade-up">
+      <div class="platform-geo">Great Britain</div>
+      <h3>MyGridGB</h3>
+      <p>Founded in 2014, MyGridGB is an independent public resource tracking real-time electricity generation and carbon intensity across the GB grid. Used by researchers, journalists, policymakers and energy professionals to understand how and when Britain generates its power.</p>
+      <div class="platform-features">
+        <div class="platform-feature">Real-time generation mix and carbon intensity</div>
+        <div class="platform-feature">Historical trends since 2012</div>
+        <div class="platform-feature">Renewable and fossil fuel tracking</div>
+        <div class="platform-feature">Free public resource — no login required</div>
+      </div>
+      <a href="https://www.mygridgb.co.uk" target="_blank" class="platform-link">Visit MyGridGB →</a>
+    </div>
+
+    <div class="platform-card fade-up">
+      <div class="platform-geo">New Zealand</div>
+      <h3>MyGridNZ</h3>
+      <p>The New Zealand equivalent of MyGridGB — live electricity generation data for the NZ grid, including hydro, geothermal, wind, solar and thermal sources. Built to support New Zealand's goal of 100% renewable electricity and give everyone visibility into how the grid is performing today and under future scenarios.</p>
+      <div class="platform-features">
+        <div class="platform-feature">Real-time NZ generation and carbon intensity</div>
+        <div class="platform-feature">Hydro, geothermal, wind and solar breakdown</div>
+        <div class="platform-feature">Future scenario planning tools</div>
+        <div class="platform-feature">Free public resource — no login required</div>
+      </div>
+      <a href="https://afcrossland.github.io/mygridnz/index.html" target="_blank" class="platform-link">Visit MyGridNZ →</a>
+    </div>
+
+  </div>
+</section>
+
 <section id="insights">
   <div class="section-label fade-up">Insights &amp; media</div>
   <h2 class="fade-up">Thought leadership from <em>the frontline.</em></h2>
   <p class="lead fade-up">Alongside consulting, Andrew is an active contributor to public understanding of the energy transition.</p>
   <div class="insights-grid">
     <div class="insight-card fade-up"><div class="insight-type">Book</div><h3>Decarbonising Electricity: Made Simple</h3><p>A practical roadmap for transitioning a national grid to low-carbon energy. Published by Routledge, sold in 15 countries.</p><a href="https://www.amazon.co.uk/Decarbonising-Electricity-Routledge-Explorations-Studies/dp/0367203324" target="_blank" class="insight-link">Buy on Amazon →</a></div>
-    <div class="insight-card fade-up"><div class="insight-type">Data platform</div><h3>MyGridGB — Real-time GB electricity data</h3><p>An independent public resource tracking real-time generation and carbon emissions across Great Britain. Founded by Andrew in 2014.</p><a href="https://www.mygridgb.co.uk" target="_blank" class="insight-link">Visit MyGridGB →</a></div>
-    <div class="insight-card fade-up"><div class="insight-type">Media &amp; speaking</div><h3>BBC, government evidence &amp; international lectures</h3><p>BBC appearances, evidence to UK Government on the Clean Power Plan, and keynotes in the UK, New Zealand and Indonesia.</p><a href="#contact" class="insight-link">Enquire about speaking →</a></div>
+<div class="insight-card fade-up"><div class="insight-type">Media &amp; speaking</div><h3>BBC, government evidence &amp; international lectures</h3><p>BBC appearances, evidence to UK Government on the Clean Power Plan, and keynotes in the UK, New Zealand and Indonesia.</p><a href="#contact" class="insight-link">Enquire about speaking →</a></div>
     <div class="insight-card fade-up"><div class="insight-type">Academic</div><h3>15+ journal papers &amp; 3 book chapters</h3><p>Professor in Practice at Durham University Energy Institute, sitting on the Advisory Board alongside leading figures in UK energy.</p><a href="https://www.durham.ac.uk/research/institutes-and-centres/durham-energy-institute/" target="_blank" class="insight-link">Durham Energy Institute →</a><br><a href="https://www.researchgate.net/profile/Andrew-Crossland?ev=hdr_xprf" target="_blank" class="insight-link" style="margin-top:0.5rem;">ResearchGate profile →</a></div>
   </div>
 </section>
