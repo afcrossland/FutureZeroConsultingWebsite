@@ -120,6 +120,8 @@
 
   #platforms { background: var(--white); }
   .platforms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+  #modelling { background: var(--stone); }
+  .modelling-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 3rem; }
   .platform-card { border-radius: 0.75rem; border: 1.5px solid var(--stone); padding: 2.5rem; display: flex; flex-direction: column; transition: box-shadow 0.2s, transform 0.2s; }
   .platform-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(14,18,16,0.09); }
   .platform-geo { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green-mid); margin-bottom: 1rem; }
@@ -201,6 +203,7 @@
     <li><a href="#about">About</a></li>
     <li><a href="#services">Services</a></li>
     <li><a href="#platforms">Platforms</a></li>
+    <li><a href="#modelling">Modelling</a></li>
     <li><a href="#portfolio">Portfolio</a></li>
     <li><a href="#insights">Insights</a></li>
   </ul>
@@ -302,7 +305,42 @@
         <div class="platform-feature">Future scenario planning tools</div>
         <div class="platform-feature">Free public resource — no login required</div>
       </div>
-      <a href="https://afcrossland.github.io/mygridnz/index.html" target="_blank" class="platform-link">Visit MyGridNZ →</a>
+      <a href="https://nz.future-zero.com" target="_blank" class="platform-link">Visit MyGridNZ →</a>
+    </div>
+
+  </div>
+</section>
+
+<section id="modelling">
+  <div class="section-label fade-up">Modelling tools</div>
+  <h2 class="fade-up">Evidence-based tools for the <em>energy transition.</em></h2>
+  <p class="lead fade-up">Interactive calculators built on real grid data — giving accurate, independent estimates rather than vendor projections.</p>
+  <div class="modelling-grid">
+
+    <div class="platform-card fade-up">
+      <div class="platform-geo">Great Britain</div>
+      <h3>Solar &amp; Battery Calculator</h3>
+      <p>Model solar generation and battery storage savings against real GB grid and tariff data. Built on a decade of MyGridGB datasets — for homeowners, businesses and advisers who want numbers they can trust.</p>
+      <div class="platform-features">
+        <div class="platform-feature">Solar generation modelling for any GB location</div>
+        <div class="platform-feature">Battery storage savings estimates</div>
+        <div class="platform-feature">Based on real historical grid and tariff data</div>
+        <div class="platform-feature">Free to use</div>
+      </div>
+      <a href="https://www.mygridgb.co.uk/solar-calculator/" target="_blank" class="platform-link">Try the Solar Calculator →</a>
+    </div>
+
+    <div class="platform-card fade-up">
+      <div class="platform-geo">New Zealand</div>
+      <h3>NZ Electricity Simulator</h3>
+      <p>Model New Zealand's electricity future — explore how different combinations of renewables, storage and demand shape the grid. Built on real NZ generation data to support evidence-based planning and policy.</p>
+      <div class="platform-features">
+        <div class="platform-feature">Scenario modelling for NZ grid mix</div>
+        <div class="platform-feature">Renewables, storage and demand interaction</div>
+        <div class="platform-feature">Based on real historical NZ generation data</div>
+        <div class="platform-feature">Free to use</div>
+      </div>
+      <a href="https://nz.future-zero.com/sim/" target="_blank" class="platform-link">Try the NZ Simulator →</a>
     </div>
 
   </div>
