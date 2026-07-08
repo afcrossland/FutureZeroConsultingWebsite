@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NZ Solar Commercial Model — Future Zero Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --black: #0e1210; --white: #f5f3ee; --green: #1a5c3a; --green-mid: #2d8c5a;
+  --green-light: #d4ede0; --green-accent: #4fbe85; --stone: #e8e4dc;
+  --muted: #6b7570; --serif: 'DM Serif Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif; --amber: #c87941; --red-soft: #b94040;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--white); color: var(--black); font-size: 14px; line-height: 1.6; overflow-x: hidden; }
+
+nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 4vw; background: rgba(245,243,238,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(26,92,58,0.12); box-shadow: 0 2px 20px rgba(14,18,16,0.06); }
+.nav-logo { font-family: var(--serif); font-size: 1.15rem; color: var(--green); text-decoration: none; }
+.nav-back { font-size: 0.85rem; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 0.4rem; transition: color 0.2s; }
+.nav-back:hover { color: var(--green); }
+
+.model-header { background: var(--green); padding: 2.5rem 5vw 2rem; color: var(--white); }
+.model-header h1 { font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 400; margin-bottom: 0.4rem; }
+.model-header h1 em { color: var(--green-accent); font-style: italic; }
+.model-header p { font-size: 0.875rem; color: rgba(255,255,255,0.6); font-weight: 300; max-width: 60ch; }
+.disclaimer-badge { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.4rem 0.9rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.75); }
+
+.model-body { display: grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 8rem); align-items: start; }
+
+/* INPUTS */
+.inputs-panel { background: var(--stone); border-right: 1px solid #ccc8be; padding: 1.5rem 1.25rem; position: sticky; top: 57px; max-height: calc(100vh - 57px); overflow-y: auto; }
+.inputs-panel::-webkit-scrollbar { width: 4px; }
+.inputs-panel::-webkit-scrollbar-thumb { background: #ccc8be; border-radius: 2px; }
+.input-section { margin-bottom: 1.5rem; }
+.input-section-title { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green-mid); margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid #ccc8be; display: flex; align-items: center; gap: 0.5rem; }
+.input-section-title::before { content: ''; display: block; width: 1.5rem; height: 1px; background: var(--green-mid); }
+.input-row { margin-bottom: 0.75rem; }
+.input-row label { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; font-weight: 300; }
+.input-row label .unit { font-size: 0.7rem; color: #9aa49e; }
+.input-control { display: grid; grid-template-columns: 1fr 60px; gap: 0.4rem; align-items: center; }
+.input-control input[type=range] { width: 100%; height: 3px; accent-color: var(--green); cursor: pointer; }
+.input-control input[type=number], .input-row select, .input-full input[type=number] { width: 100%; padding: 0.3rem 0.5rem; background: var(--white); border: 1px solid #ccc8be; border-radius: 0.35rem; font-family: var(--sans); font-size: 0.8rem; color: var(--black); }
+.input-control input[type=number] { text-align: right; }
+.input-control input:focus, .input-row select:focus, .input-full input:focus { outline: none; border-color: var(--green-accent); }
+.input-full input { grid-column: 1 / -1; }
+
+.capex-row { display: flex; justify-content: space-between; font-size: 0.78rem; padding: 0.25rem 0; border-bottom: 1px solid rgba(232,228,220,0.5); color: var(--muted); }
+.capex-row strong { color: var(--black); font-weight: 500; }
+.capex-total { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.5rem 0 0; font-weight: 500; }
+
+/* RESULTS */
+.results-panel { padding: 1.5rem 2rem; }
+
+/* KPI */
+.kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; margin-bottom: 1.75rem; }
+.kpi-tile { background: var(--white); border: 1.5px solid var(--stone); border-radius: 0.6rem; padding: 1rem 1rem 0.9rem; transition: box-shadow 0.2s; }
+.kpi-tile:hover { box-shadow: 0 4px 20px rgba(14,18,16,0.08); }
+.kpi-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+.kpi-value { font-family: var(--serif); font-size: 1.6rem; line-height: 1; color: var(--black); margin-bottom: 0.2rem; }
+.kpi-sub { font-size: 0.7rem; color: var(--muted); }
+.kpi-tile.good .kpi-value { color: var(--green); }
+.kpi-tile.warn .kpi-value { color: var(--amber); }
+.kpi-tile.bad  .kpi-value { color: var(--red-soft); }
+
+/* CHART + SUMMARY */
+.chart-wrap, .summary-wrap { background: var(--white); border: 1.5px solid var(--stone); border-radius: 0.75rem; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+.chart-wrap canvas { max-height: 260px; }
+.section-title { font-size: 0.75rem; font-weight: 500; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem; }
+.summary-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.summary-table th { text-align: left; padding: 0.35rem 0.5rem; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--stone); white-space: nowrap; }
+.summary-table th:not(:first-child) { text-align: right; }
+.summary-table td { padding: 0.3rem 0.5rem; border-bottom: 1px solid rgba(232,228,220,0.5); }
+.summary-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.summary-table tr.total td { font-weight: 500; border-top: 1.5px solid var(--stone); background: rgba(232,228,220,0.3); }
+.pos { color: var(--green-mid); } .neg { color: var(--red-soft); }
+
+/* DETAIL ACCORDIONS */
+.detail-section { margin-top: 0; }
+.detail-heading { font-size: 0.75rem; font-weight: 500; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.75rem; }
+
+details.accord { border: 1.5px solid var(--stone); border-radius: 0.6rem; margin-bottom: 0.6rem; background: var(--white); overflow: hidden; }
+details.accord[open] { border-color: #b8c8c0; }
+details.accord > summary { padding: 0.75rem 1.25rem; font-size: 0.8rem; font-weight: 500; color: var(--black); cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+details.accord > summary::after { content: '▾'; color: var(--muted); font-size: 0.75rem; transition: transform 0.2s; }
+details.accord[open] > summary::after { transform: rotate(-180deg); }
+details.accord > summary::-webkit-details-marker { display: none; }
+details.accord > summary .accord-tag { font-size: 0.65rem; font-weight: 400; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+
+.table-scroll { overflow-x: auto; padding: 0 0 0.75rem; }
+.detail-table { border-collapse: collapse; font-size: 0.74rem; min-width: 100%; }
+.detail-table th, .detail-table td { padding: 0.28rem 0.55rem; white-space: nowrap; border-bottom: 1px solid rgba(232,228,220,0.4); text-align: right; font-variant-numeric: tabular-nums; }
+.detail-table th:first-child, .detail-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--white); min-width: 210px; max-width: 210px; text-align: left; font-weight: 300; color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
+.detail-table thead tr th { background: var(--stone); color: var(--muted); font-weight: 500; font-size: 0.7rem; }
+.detail-table thead tr th:first-child { background: var(--stone); }
+.detail-table tr.dt-total td { font-weight: 500; color: var(--black); background: rgba(232,228,220,0.25); border-top: 1px solid #ccc8be; }
+.detail-table tr.dt-total td:first-child { background: rgba(232,228,220,0.25); }
+.detail-table tr.dt-sub td { color: var(--muted); font-style: italic; font-size: 0.7rem; }
+.detail-table tr.dt-sub td:first-child { padding-left: 1.25rem; }
+.detail-table .v-pos { color: var(--green-mid); }
+.detail-table .v-neg { color: var(--red-soft); }
+.detail-table .v-zero { color: #b0bdb8; }
+.detail-table .v-warn { color: var(--amber); }
+
+/* SCENARIO HEROES */
+.scenario-heroes { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.75rem; margin-bottom: 1.25rem; }
+.scenario-hero { background: var(--white); border: 1.5px solid var(--stone); border-radius: 0.6rem; padding: 1rem 1rem 0.9rem; position: relative; overflow: hidden; transition: box-shadow 0.2s; }
+.scenario-hero:hover { box-shadow: 0 4px 20px rgba(14,18,16,0.08); }
+.scenario-hero::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: var(--stone); border-radius: 0.6rem 0.6rem 0 0; }
+.hero-ws::before  { background: var(--green-mid); }
+.hero-ppa::before { background: var(--amber); }
+.hero-bl::before  { background: var(--green-accent); }
+.hero-rt::before  { background: #6b5de0; }
+.hero-mode { font-size: 0.62rem; font-weight: 500; letter-spacing: 0.11em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.25rem; }
+.hero-desc { font-size: 0.7rem; color: var(--muted); font-weight: 300; margin-bottom: 0.65rem; min-height: 2.6em; line-height: 1.4; }
+.hero-irr { font-family: var(--serif); font-size: 2rem; line-height: 1; color: var(--black); margin-bottom: 0.15rem; }
+.hero-sub { font-size: 0.67rem; color: var(--muted); }
+.scenario-hero.good .hero-irr { color: var(--green); }
+.scenario-hero.warn .hero-irr { color: var(--amber); }
+.scenario-hero.bad  .hero-irr { color: var(--red-soft); }
+
+@media (max-width: 900px) {
+  .model-body { grid-template-columns: 1fr; }
+  .inputs-panel { position: static; max-height: none; }
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .scenario-heroes { grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width: 560px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Future Zero Consulting</a>
+  <a href="index.html#modelling" class="nav-back">← Modelling tools</a>
+</nav>
+
+<header class="model-header">
+  <h1>NZ Solar <em>Commercial Model</em></h1>
+  <p>40-year cashflow modelling for utility-scale solar and battery projects in New Zealand — based on real NZ wholesale price forecasts, yield data, and financing structures.</p>
+  <span class="disclaimer-badge">⚠ Feasibility screening only — not for investment decisions</span>
+</header>
+
+<div class="model-body">
+<aside class="inputs-panel">
+
+  <div class="input-section">
+    <div class="input-section-title">Solar System</div>
+    <div class="input-row"><label>PV Size <span class="unit">MWp</span></label>
+      <div class="input-control"><input type="range" id="pvSize" min="1" max="100" value="25" step="1"><input type="number" id="pvSizeN" value="25" step="1"></div></div>
+    <div class="input-row"><label>Yield <span class="unit">kWh/kWp/yr</span></label>
+      <div class="input-control"><input type="range" id="pvYield" min="1200" max="1800" value="1514" step="10"><input type="number" id="pvYieldN" value="1514" step="10"></div></div>
+    <div class="input-row"><label>PV Cost <span class="unit">NZD/Wp</span></label>
+      <div class="input-control"><input type="range" id="pvCost" min="0.60" max="3.00" value="1.41" step="0.01"><input type="number" id="pvCostN" value="1.41" step="0.01"></div></div>
+    <div class="input-row"><label>Degradation <span class="unit">%/yr</span></label>
+      <div class="input-control"><input type="range" id="degradation" min="0.1" max="1.5" value="0.4" step="0.1"><input type="number" id="degradationN" value="0.4" step="0.1"></div></div>
+    <div class="input-row"><label>Project Life <span class="unit">years</span></label>
+      <div class="input-control"><input type="range" id="projectLife" min="15" max="40" value="31" step="1"><input type="number" id="projectLifeN" value="31" step="1"></div></div>
+    <div class="input-row"><label>Inverter Replacement <span class="unit">yr</span></label>
+      <div class="input-control"><input type="range" id="invReplYear" min="8" max="20" value="15" step="1"><input type="number" id="invReplYearN" value="15" step="1"></div></div>
+  </div>
+
+  <div class="input-section">
+    <div class="input-section-title">Battery (optional)</div>
+    <div class="input-row"><label>Battery Power <span class="unit">MW</span></label>
+      <div class="input-control"><input type="range" id="battMW" min="0" max="100" value="0" step="1"><input type="number" id="battMWN" value="0" step="1"></div></div>
+    <div class="input-row"><label>Battery Capacity <span class="unit">MWh</span></label>
+      <div class="input-control"><input type="range" id="battMWh" min="0" max="400" value="0" step="10"><input type="number" id="battMWhN" value="0" step="10"></div></div>
+    <div class="input-row"><label>Battery Cost <span class="unit">NZD/kWh</span></label>
+      <div class="input-control"><input type="range" id="battCost" min="100" max="600" value="350" step="10"><input type="number" id="battCostN" value="350" step="10"></div></div>
+  </div>
+
+  <div class="input-section">
+    <div class="input-section-title">Revenue</div>
+    <div class="input-row"><label>Wholesale Price Scenario</label>
+      <select id="priceScenario">
+        <option value="gwap">NZ GWAP (forecast)</option>
+        <option value="80cpi">$80/MWh + CPI</option>
+        <option value="100cpi">$100/MWh + CPI</option>
+        <option value="custom">Custom flat + CPI</option>
+      </select></div>
+    <div class="input-row" id="customPriceRow" style="display:none"><label>Custom Price <span class="unit">NZD/MWh</span></label>
+      <div class="input-control input-full"><input type="number" id="customPriceN" value="120" step="5"></div></div>
+    <div class="input-row"><label>PPA Fraction <span class="unit">% of gen</span></label>
+      <div class="input-control"><input type="range" id="ppaFraction" min="0" max="100" value="70" step="5"><input type="number" id="ppaFractionN" value="70" step="5"></div></div>
+    <div class="input-row"><label>PPA Price (yr 1) <span class="unit">NZD/MWh</span></label>
+      <div class="input-control"><input type="range" id="ppaPrice" min="50" max="300" value="125" step="5"><input type="number" id="ppaPriceN" value="125" step="5"></div></div>
+    <div class="input-row"><label>FIR Rate <span class="unit">NZD/MW/yr</span></label>
+      <div class="input-control input-full"><input type="number" id="firRateN" value="20000" step="1000"></div></div>
+    <div class="input-row"><label>SIR Rate <span class="unit">NZD/MW/yr</span></label>
+      <div class="input-control input-full"><input type="number" id="sirRateN" value="5000" step="1000"></div></div>
+    <div class="input-row"><label>Local Retail Price (yr 1) <span class="unit">NZD/MWh</span></label>
+      <div class="input-control"><input type="range" id="retailPrice" min="50" max="350" value="175" step="5"><input type="number" id="retailPriceN" value="175" step="5"></div></div>
+    <div class="input-row"><label>CPI / Escalation <span class="unit">%/yr</span></label>
+      <div class="input-control"><input type="range" id="cpi" min="0" max="6" value="2.1" step="0.1"><input type="number" id="cpiN" value="2.1" step="0.1"></div></div>
+  </div>
+
+  <div class="input-section">
+    <div class="input-section-title">Capital Costs</div>
+    <div class="input-row"><label>Grid Connection <span class="unit">NZD k</span></label>
+      <div class="input-control input-full"><input type="number" id="gridCapexN" value="1800" step="100"></div></div>
+    <div class="input-row"><label>Development Fee <span class="unit">NZD k</span></label>
+      <div class="input-control input-full"><input type="number" id="devFeeN" value="700" step="50"></div></div>
+  </div>
+
+  <div class="input-section">
+    <div class="input-section-title">Operating Costs</div>
+    <div class="input-row"><label>O&amp;M <span class="unit">NZD k/MWp/yr</span></label>
+      <div class="input-control"><input type="range" id="omCost" min="2" max="25" value="8" step="0.5"><input type="number" id="omCostN" value="8" step="0.5"></div></div>
+    <div class="input-row"><label>Insurance <span class="unit">NZD k/MWp/yr</span></label>
+      <div class="input-control"><input type="range" id="insurance" min="2" max="20" value="9.3" step="0.1"><input type="number" id="insuranceN" value="9.3" step="0.1"></div></div>
+    <div class="input-row"><label>Grid Connection <span class="unit">NZD k/yr</span></label>
+      <div class="input-control input-full"><input type="number" id="gridOpexN" value="50" step="5"></div></div>
+    <div class="input-row"><label>Land Rental <span class="unit">NZD k/yr</span></label>
+      <div class="input-control input-full"><input type="number" id="landN" value="25" step="5"></div></div>
+    <div class="input-row"><label>Site Electricity <span class="unit">NZD k/yr</span></label>
+      <div class="input-control input-full"><input type="number" id="siteElecN" value="10" step="2"></div></div>
+    <div class="input-row"><label>OPEX Escalation <span class="unit">%/yr</span></label>
+      <div class="input-control"><input type="range" id="opexEsc" min="0" max="5" value="2.1" step="0.1"><input type="number" id="opexEscN" value="2.1" step="0.1"></div></div>
+  </div>
+
+  <div class="input-section">
+    <div class="input-section-title">Finance &amp; Tax</div>
+    <div class="input-row"><label>Gearing <span class="unit">%</span></label>
+      <div class="input-control"><input type="range" id="gearing" min="0" max="90" value="68" step="1"><input type="number" id="gearingN" value="68" step="1"></div></div>
+    <div class="input-row"><label>Debt Rate <span class="unit">%</span></label>
+      <div class="input-control"><input type="range" id="debtRate" min="2" max="15" value="6.25" step="0.25"><input type="number" id="debtRateN" value="6.25" step="0.25"></div></div>
+    <div class="input-row"><label>Debt Tenor <span class="unit">years</span></label>
+      <div class="input-control"><input type="range" id="debtTenor" min="5" max="25" value="15" step="1"><input type="number" id="debtTenorN" value="15" step="1"></div></div>
+    <div class="input-row"><label>Equity WACC <span class="unit">%</span></label>
+      <div class="input-control"><input type="range" id="wacc" min="4" max="20" value="9" step="0.25"><input type="number" id="waccN" value="9" step="0.25"></div></div>
+    <div class="input-row"><label>Corporation Tax Rate <span class="unit">%</span></label>
+      <div class="input-control"><input type="range" id="taxRate" min="0" max="35" value="28" step="1"><input type="number" id="taxRateN" value="28" step="1"></div></div>
+  </div>
+
+  <div class="input-section">
+    <div class="input-section-title">Capex Summary</div>
+    <div class="capex-row"><span>PV EPC</span><strong id="capexPV">—</strong></div>
+    <div class="capex-row"><span>Battery EPC</span><strong id="capexBatt">—</strong></div>
+    <div class="capex-row"><span>Grid Connection</span><strong id="capexGrid">—</strong></div>
+    <div class="capex-row"><span>Development Fee</span><strong id="capexDev">—</strong></div>
+    <div class="capex-total"><span>Total Capex</span><strong id="capexTotal">—</strong></div>
+  </div>
+
+</aside>
+
+<main class="results-panel">
+
+  <!-- SCENARIO HEROES -->
+  <div class="scenario-heroes">
+    <div class="scenario-hero hero-ws" id="heroWS">
+      <div class="hero-mode">Pure Wholesale</div>
+      <div class="hero-desc" id="hdescWS">100% spot market · NZ GWAP forecast</div>
+      <div class="hero-irr" id="hirrWS">—</div>
+      <div class="hero-sub">Project IRR</div>
+    </div>
+    <div class="scenario-hero hero-ppa" id="heroPPA">
+      <div class="hero-mode">Pure PPA</div>
+      <div class="hero-desc" id="hdescPPA">100% contracted at fixed price</div>
+      <div class="hero-irr" id="hirrPPA">—</div>
+      <div class="hero-sub">Project IRR</div>
+    </div>
+    <div class="scenario-hero hero-bl" id="heroBL">
+      <div class="hero-mode">Blended</div>
+      <div class="hero-desc" id="hdescBL">PPA + wholesale split</div>
+      <div class="hero-irr" id="hirrBL">—</div>
+      <div class="hero-sub">Project IRR</div>
+    </div>
+    <div class="scenario-hero hero-rt" id="heroRT">
+      <div class="hero-mode">Local Retail</div>
+      <div class="hero-desc" id="hdescRT">100% direct to load at retail rate</div>
+      <div class="hero-irr" id="hirrRT">—</div>
+      <div class="hero-sub">Project IRR</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-tile" id="kpiProjectIRR">
+      <div class="kpi-label">Project IRR</div>
+      <div class="kpi-value" id="valProjectIRR">—</div>
+      <div class="kpi-sub">Pre-tax, unlevered</div>
+    </div>
+    <div class="kpi-tile" id="kpiEquityIRR">
+      <div class="kpi-label">Equity IRR</div>
+      <div class="kpi-value" id="valEquityIRR">—</div>
+      <div class="kpi-sub">Post-financing, post-tax</div>
+    </div>
+    <div class="kpi-tile" id="kpiNPV">
+      <div class="kpi-label">Project NPV</div>
+      <div class="kpi-value" id="valNPV">—</div>
+      <div class="kpi-sub">At equity WACC</div>
+    </div>
+    <div class="kpi-tile" id="kpiDSCR">
+      <div class="kpi-label">Min DSCR</div>
+      <div class="kpi-value" id="valDSCR">—</div>
+      <div class="kpi-sub">Debt service cover</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-label">LCOE (real)</div>
+      <div class="kpi-value" id="valLCOE">—</div>
+      <div class="kpi-sub">NZD/MWh</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="section-title">Annual cashflows — NZD millions</div>
+    <canvas id="cashflowChart"></canvas>
+  </div>
+
+  <div class="summary-wrap">
+    <div class="section-title">Summary at selected years (NZD k)</div>
+    <div style="overflow-x:auto">
+      <table class="summary-table">
+        <thead><tr id="summaryHead"></tr></thead>
+        <tbody id="summaryBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DETAIL ACCORDIONS -->
+  <div class="detail-section">
+    <div class="detail-heading" style="margin-bottom:0.75rem">Full annual detail — all years (NZD k unless stated)</div>
+
+    <details class="accord" id="acc-tech">
+      <summary>Technical <span class="accord-tag">generation · state of health · battery</span></summary>
+      <div class="table-scroll"><table class="detail-table" id="dt-tech"></table></div>
+    </details>
+
+    <details class="accord" id="acc-rev">
+      <summary>Revenue <span class="accord-tag">PPA · wholesale · ancillary · total</span></summary>
+      <div class="table-scroll"><table class="detail-table" id="dt-rev"></table></div>
+    </details>
+
+    <details class="accord" id="acc-opex">
+      <summary>Operating Costs <span class="accord-tag">O&amp;M · insurance · grid · land · site</span></summary>
+      <div class="table-scroll"><table class="detail-table" id="dt-opex"></table></div>
+    </details>
+
+    <details class="accord" id="acc-ucf">
+      <summary>Cashflow — Pre-Tax Unlevered <span class="accord-tag">capex · EBITDA · net CF</span></summary>
+      <div class="table-scroll"><table class="detail-table" id="dt-ucf"></table></div>
+    </details>
+
+    <details class="accord" id="acc-lcf">
+      <summary>Cashflow — Post-Tax Levered <span class="accord-tag">equity · tax · debt · net CF</span></summary>
+      <div class="table-scroll"><table class="detail-table" id="dt-lcf"></table></div>
+    </details>
+
+    <details class="accord" id="acc-debt">
+      <summary>Debt Schedule <span class="accord-tag">opening · interest · repayment · closing · DSCR</span></summary>
+      <div class="table-scroll"><table class="detail-table" id="dt-debt"></table></div>
+    </details>
+
+    <details class="accord" id="acc-pl">
+      <summary>P&amp;L <span class="accord-tag">EBITDA · depreciation · EBIT · interest · NPBT · tax · NPAT</span></summary>
+      <div class="table-scroll"><table class="detail-table" id="dt-pl"></table></div>
+    </details>
+
+    <details class="accord" id="acc-tax">
+      <summary>Tax <span class="accord-tag">losses carried forward · taxable income · cash tax paid</span></summary>
+      <div class="table-scroll"><table class="detail-table" id="dt-tax"></table></div>
+    </details>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ── NZ GWAP curve (NZD/MWh, operational year 1 = 2030) ──
+const GWAP = [103.31,108.47,116.65,122.45,121.59,126.21,129.48,129.15,133.24,132.01,137.05,139.39,139.17,139.28,136.50,139.43,146.92,151.60,152.85,153.25,148.72,152.03,153.05,154.07,155.09,156.11,157.14,158.16,159.18,160.20,161.22];
+
+// ── Maths ──
+function calcIRR(cfs) {
+  const hasP = cfs.some(x=>x>0), hasN = cfs.some(x=>x<0);
+  if (!hasP||!hasN) return NaN;
+  let r=0.1;
+  for(let i=0;i<300;i++){
+    let n=0,d=0;
+    for(let t=0;t<cfs.length;t++){const v=Math.pow(1+r,t);n+=cfs[t]/v;d-=t*cfs[t]/(v*(1+r));}
+    if(Math.abs(d)<1e-14)break;
+    const delta=n/d; r=Math.max(-0.999,Math.min(r-delta,50));
+    if(Math.abs(delta)<1e-10)break;
+  }
+  return r;
+}
+function calcNPV(rate,cfs){return cfs.reduce((s,cf,t)=>s+cf/Math.pow(1+rate,t),0);}
+function calcLCOE(rr,capex,opexArr,genArr){
+  let pc=capex,pg=0;
+  for(let t=0;t<opexArr.length;t++){const d=Math.pow(1+rr,t+1);pc+=opexArr[t]/d;pg+=genArr[t]/d;}
+  return pg>0?pc/pg:NaN;
+}
+
+// ── Formatters ──
+function fK(v,dp=1){
+  if(!isFinite(v)||v===null)return'—';
+  const neg=v<0; const s=Math.abs(v).toFixed(dp);
+  const [int,dec]=s.split('.');
+  const fmt=int.replace(/\B(?=(\d{3})+(?!\d))/g,',')+'.'+dec;
+  return(neg?'−':'')+fmt;
+}
+function fPct(v,dp=1){return isFinite(v)?v.toFixed(dp)+'%':'—';}
+function fRatio(v,dp=2){return isFinite(v)?v.toFixed(dp)+'x':'—';}
+function fM(v){if(!isFinite(v))return'—';return(Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M':(v/1e3).toFixed(0)+'k');}
+function cls(v){return v>0?'v-pos':v<0?'v-neg':'v-zero';}
+
+// ── Main calculate ──
+function calculate(){
+  const g=id=>parseFloat(document.getElementById(id).value);
+  const pv_mwp=g('pvSize'), yield_kwp=g('pvYield'), pv_wp=g('pvCost');
+  const deg=g('degradation')/100, life=Math.round(g('projectLife'));
+  const inv_yr=Math.round(g('invReplYear'));
+  const batt_mw=g('battMW'), batt_mwh=g('battMWh'), batt_nzd_kwh=g('battCost');
+  const scenario=document.getElementById('priceScenario').value;
+  const customP=g('customPriceN');
+  const ppa_frac=g('ppaFraction')/100, ppa_yr1=g('ppaPrice');
+  const fir_rate=g('firRateN'), sir_rate=g('sirRateN');
+  const cpi=g('cpi')/100;
+  const grid_capex=g('gridCapexN')*1e3, dev_fee=g('devFeeN')*1e3;
+  const om_k_mwp=g('omCost'), ins_k_mwp=g('insurance');
+  const grid_opex_k=g('gridOpexN'), land_k=g('landN'), site_k=g('siteElecN');
+  const opex_esc=g('opexEsc')/100;
+  const gearing=g('gearing')/100, dr=g('debtRate')/100;
+  const tenor=Math.round(g('debtTenor')), wacc=g('wacc')/100;
+  const tax_rate=g('taxRate')/100;
+
+  // ── Capex ──
+  const pv_capex=pv_mwp*1e6*pv_wp, batt_capex=batt_mwh*1e3*batt_nzd_kwh;
+  const total_capex=pv_capex+batt_capex+grid_capex+dev_fee;
+  const debt=total_capex*gearing, equity_inv=total_capex-debt;
+  // Inverter replacement cost (~3.5% of PV EPC)
+  const inv_cost=pv_capex*0.035;
+  // Battery replacement at year 10 if battery present
+  const batt_repl_yr=batt_mwh>0?10:Infinity;
+  const batt_repl_cost=batt_mwh>0?batt_capex:0;
+
+  // Debt service (annuity)
+  const ds=debt>0&&dr>0?debt*dr*Math.pow(1+dr,tenor)/(Math.pow(1+dr,tenor)-1):0;
+
+  // Depreciation base (PV + battery, straight-line 10yr; inverters 10yr from yr1 and inv_yr)
+  const depr_life=10;
+  const depr_main=(pv_capex-inv_cost+batt_capex)/depr_life; // NZD/yr years 1-10
+  const depr_inv=inv_cost/depr_life;                         // NZD/yr years 1-10
+  const depr_inv2=inv_cost/depr_life;                        // NZD/yr years inv_yr to inv_yr+9
+
+  // Update capex summary
+  document.getElementById('capexPV').textContent=fM(pv_capex);
+  document.getElementById('capexBatt').textContent=fM(batt_capex);
+  document.getElementById('capexGrid').textContent=fM(grid_capex);
+  document.getElementById('capexDev').textContent=fM(dev_fee);
+  document.getElementById('capexTotal').textContent=fM(total_capex);
+
+  // ── Annual arrays ──
+  const proj_cf=[-total_capex], eq_cf=[-equity_inv];
+  // Technical
+  const pvGen=[], pvSoH=[], battUsable=[], battSoH=[], battRepl=[];
+  // Revenue
+  const revPPA=[], revWholesale=[], revFIR=[], revSIR=[], revTotal=[];
+  // Opex lines
+  const opOM=[], opIns=[], opGrid=[], opLand=[], opSite=[], opTotal=[];
+  // Capex annual (replacements)
+  const annCapex=[];
+  // Cashflow unlevered
+  const ebitdaArr=[], netUCF=[];
+  // Debt
+  let openDebt=debt;
+  const debtOpen=[], debtInt=[], debtRepl=[], debtClose=[], dscrArr=[];
+  // P&L
+  const depArr=[], ebitArr=[], intExpArr=[], npbtArr=[], taxPLArr=[], npatArr=[];
+  // Tax
+  let taxLoss=0;
+  const tlOpen=[], tlGen=[], tlUtil=[], tlClose=[], taxInc=[], cashTax=[];
+  // Levered CF
+  const cashTaxPaid=[], netLCF=[];
+  // Generation for LCOE
+  const genArr=[];
+
+  let battSoHv=1.0;
+
+  for(let t=1;t<=life;t++){
+    // Technical
+    const gen=pv_mwp*yield_kwp*Math.pow(1-deg,t-1);
+    pvGen.push(gen);
+    pvSoH.push(1-deg*t);
+    const bRepl=t===batt_repl_yr;
+    battRepl.push(bRepl?1:0);
+    if(bRepl) battSoHv=1.0; else if(t>1) battSoHv=Math.max(0.8,battSoHv-0.02);
+    battSoH.push(battSoHv);
+    battUsable.push(batt_mwh*1e3*battSoHv); // kWh
+    genArr.push(gen);
+
+    // Prices
+    let wp;
+    if(scenario==='gwap') wp=t<=GWAP.length?GWAP[t-1]:GWAP[GWAP.length-1]*Math.pow(1.0065,t-GWAP.length);
+    else if(scenario==='80cpi') wp=80*Math.pow(1+cpi,t-1);
+    else if(scenario==='100cpi') wp=100*Math.pow(1+cpi,t-1);
+    else wp=customP*Math.pow(1+cpi,t-1);
+    const ppa_p=ppa_yr1*Math.pow(1+cpi,t-1);
+
+    // Revenue (NZD)
+    const rPPA=gen*ppa_frac*ppa_p;
+    const rWS=gen*(1-ppa_frac)*wp;
+    const rFIR=batt_mw>0?batt_mw*fir_rate*Math.pow(1+cpi,t-1):0;
+    const rSIR=batt_mw>0?batt_mw*sir_rate*Math.pow(1+cpi,t-1):0;
+    const rTot=rPPA+rWS+rFIR+rSIR;
+    revPPA.push(rPPA/1e3); revWholesale.push(rWS/1e3); revFIR.push(rFIR/1e3); revSIR.push(rSIR/1e3); revTotal.push(rTot/1e3);
+
+    // Opex (NZD)
+    const esc=Math.pow(1+opex_esc,t-1);
+    const oOM=om_k_mwp*pv_mwp*1e3*esc;
+    const oIns=ins_k_mwp*pv_mwp*1e3*esc;
+    const oGrid=grid_opex_k*1e3*esc;
+    const oLand=land_k*1e3*esc;
+    const oSite=site_k*1e3*esc;
+    const oTot=oOM+oIns+oGrid+oLand+oSite;
+    opOM.push(oOM/1e3); opIns.push(oIns/1e3); opGrid.push(oGrid/1e3); opLand.push(oLand/1e3); opSite.push(oSite/1e3); opTotal.push(oTot/1e3);
+
+    // EBITDA (NZD)
+    const ebitda=rTot-oTot;
+    ebitdaArr.push(ebitda/1e3);
+
+    // Annual capex (replacements) NZDk
+    let ac=0;
+    if(t===inv_yr) ac+=inv_cost;
+    if(t===batt_repl_yr) ac+=batt_repl_cost;
+    annCapex.push(-ac/1e3);
+
+    // Unlevered cashflow NZD
+    const ucf=ebitda-ac;
+    netUCF.push(ucf/1e3);
+    proj_cf.push(ucf);
+
+    // Depreciation NZDk
+    let depr=0;
+    if(t<=depr_life) depr+=depr_main+depr_inv;
+    if(t>=inv_yr&&t<inv_yr+depr_life) depr+=depr_inv2;
+    depArr.push(-depr/1e3);
+
+    // Debt schedule NZDk
+    const intChg=openDebt*dr;
+    const repl=t<=tenor?Math.min(ds-intChg,openDebt):0;
+    const closeDebt=Math.max(0,openDebt-repl);
+    debtOpen.push(openDebt/1e3);
+    debtInt.push(-intChg/1e3);
+    debtRepl.push(-repl/1e3);
+    debtClose.push(closeDebt/1e3);
+    const dscr_v=t<=tenor&&ds>0?ebitda/ds:null;
+    dscrArr.push(dscr_v);
+    openDebt=closeDebt;
+
+    // P&L NZDk
+    const ebit=(ebitda+depr*(-1)*(-1e3)-depr*(-1e3))/1e3; // EBITDA + dep (dep is negative)
+    // Wait let me recalculate: EBIT = EBITDA - depreciation
+    const ebitV=ebitda/1e3+depArr[t-1]; // depArr is negative, so EBIT = EBITDA - |depr|
+    ebitArr.push(ebitV);
+    intExpArr.push(debtInt[t-1]); // already negative
+    const npbt=ebitV+debtInt[t-1];
+    npbtArr.push(npbt);
+
+    // Tax NZDk (NZ 28%, carry forward losses)
+    tlOpen.push(taxLoss/1e3);
+    const lossGen=npbt<0?-npbt:0;
+    taxLoss+=lossGen*1e3;
+    tlGen.push(lossGen);
+    const lossUtil=npbt>0?Math.min(taxLoss/1e3,npbt):0;
+    taxLoss-=lossUtil*1e3;
+    tlUtil.push(-lossUtil);
+    tlClose.push(taxLoss/1e3);
+    const taxable=Math.max(0,npbt-lossUtil);
+    taxInc.push(taxable);
+    const ctax=taxable*tax_rate;
+    cashTax.push(ctax);
+    taxPLArr.push(-ctax);
+    npatArr.push(npbt-ctax);
+
+    // Levered cashflow NZDk
+    const lcf=ebitda/1e3-repl/1e3-intChg/1e3-ctax-ac/1e3;
+    cashTaxPaid.push(-ctax);
+    netLCF.push(lcf);
+    eq_cf.push((lcf)*1e3);
+  }
+
+  // ── KPIs ──
+  const proj_irr=calcIRR(proj_cf);
+  const eq_irr=calcIRR(eq_cf);
+  const proj_npv=calcNPV(wacc,proj_cf);
+  const valid_dscr=dscrArr.filter(v=>v!==null);
+  const min_dscr=valid_dscr.length>0?Math.min(...valid_dscr):Infinity;
+  const rr=(1+wacc)/(1+cpi)-1;
+  const lcoe=calcLCOE(rr,total_capex,opTotal.map(v=>v*1e3),genArr);
+
+  setKPI('valProjectIRR','kpiProjectIRR',proj_irr,'%',[8,5]);
+  setKPI('valEquityIRR','kpiEquityIRR',eq_irr,'%',[12,8]);
+  setKPI('valNPV','kpiNPV',proj_npv,'M',[0,-Infinity],true);
+  setKPI('valDSCR','kpiDSCR',isFinite(min_dscr)?min_dscr:null,'x',[1.3,1.1]);
+  document.getElementById('valLCOE').textContent=isFinite(lcoe)?lcoe.toFixed(1):'—';
+
+  // ── Scenario heroes ──
+  const retail_yr1=parseFloat(document.getElementById('retailPriceN').value)||175;
+  function heroIRR(priceFn){
+    const cfs=[-total_capex];
+    for(let t=1;t<=life;t++){
+      const gen=pv_mwp*yield_kwp*Math.pow(1-deg,t-1);
+      const ppa_p=ppa_yr1*Math.pow(1+cpi,t-1);
+      let wp;
+      if(scenario==='gwap') wp=t<=GWAP.length?GWAP[t-1]:GWAP[GWAP.length-1]*Math.pow(1.0065,t-GWAP.length);
+      else if(scenario==='80cpi') wp=80*Math.pow(1+cpi,t-1);
+      else if(scenario==='100cpi') wp=100*Math.pow(1+cpi,t-1);
+      else wp=customP*Math.pow(1+cpi,t-1);
+      let rev=gen*priceFn(t,ppa_p,wp);
+      if(batt_mw>0) rev+=(fir_rate+sir_rate)*batt_mw*Math.pow(1+cpi,t-1);
+      const esc=Math.pow(1+opex_esc,t-1);
+      const opex=(om_k_mwp*pv_mwp+ins_k_mwp*pv_mwp+grid_opex_k+land_k+site_k)*1e3*esc;
+      let repl=0;if(t===inv_yr)repl+=inv_cost;if(t===batt_repl_yr)repl+=batt_repl_cost;
+      cfs.push(rev-opex-repl);
+    }
+    return calcIRR(cfs);
+  }
+  const irrWS =heroIRR((_t,_p,w)=>w);
+  const irrPPA=heroIRR((_t,p,_w)=>p);
+  const irrBL =heroIRR((_t,p,w)=>ppa_frac*p+(1-ppa_frac)*w);
+  const irrRT =heroIRR((t,_p,_w)=>retail_yr1*Math.pow(1+cpi,t-1));
+  const scLabel={'gwap':'NZ GWAP forecast','80cpi':'$80/MWh + CPI','100cpi':'$100/MWh + CPI','custom':`$${customP}/MWh + CPI`}[scenario]||'';
+  document.getElementById('hdescWS').textContent=`100% spot · ${scLabel}`;
+  document.getElementById('hdescPPA').textContent=`100% contracted · NZD ${ppa_yr1}/MWh yr1 + ${(cpi*100).toFixed(1)}% CPI`;
+  document.getElementById('hdescBL').textContent=`${Math.round(ppa_frac*100)}% PPA + ${Math.round((1-ppa_frac)*100)}% spot · current split`;
+  document.getElementById('hdescRT').textContent=`100% direct to load · NZD ${retail_yr1}/MWh yr1 + ${(cpi*100).toFixed(1)}% CPI`;
+  setHero('heroWS','hirrWS',irrWS,wacc);
+  setHero('heroPPA','hirrPPA',irrPPA,wacc);
+  setHero('heroBL','hirrBL',irrBL,wacc);
+  setHero('heroRT','hirrRT',irrRT,wacc);
+
+  // ── Chart ──
+  updateChart(revTotal,opTotal,dscrArr.map((_,i)=>i<tenor&&ds>0?ds/1e3:0),netLCF,life);
+
+  // ── Summary table ──
+  const snapYrs=[1,5,10,15,20,25,30].filter(y=>y<=life);
+  const thead=document.getElementById('summaryHead');
+  thead.innerHTML='<th>Metric (NZD k)</th>'+snapYrs.map(y=>`<th>Yr ${y}</th>`).join('');
+  const rows=[
+    {l:'PV Generation (MWh)',v:snapYrs.map(y=>pvGen[y-1].toFixed(0)),plain:true},
+    {l:'Total Revenue',v:snapYrs.map(y=>fK(revTotal[y-1])),pos:true},
+    {l:'  — PPA',v:snapYrs.map(y=>fK(revPPA[y-1])),sub:true},
+    {l:'  — Wholesale',v:snapYrs.map(y=>fK(revWholesale[y-1])),sub:true},
+    {l:'Total OPEX',v:snapYrs.map(y=>fK(-opTotal[y-1])),neg:true},
+    {l:'EBITDA',v:snapYrs.map(y=>fK(ebitdaArr[y-1])),total:true},
+    {l:'Depreciation',v:snapYrs.map(y=>fK(depArr[y-1])),neg:true},
+    {l:'EBIT',v:snapYrs.map(y=>fK(ebitArr[y-1])),total:true},
+    {l:'Interest Expense',v:snapYrs.map(y=>fK(debtInt[y-1])),neg:true},
+    {l:'NPBT',v:snapYrs.map(y=>fK(npbtArr[y-1])),total:true},
+    {l:'Cash Tax Paid',v:snapYrs.map(y=>fK(-cashTax[y-1])),neg:true},
+    {l:'Net CF — Levered',v:snapYrs.map(y=>fK(netLCF[y-1])),total:true},
+    {l:'DSCR',v:snapYrs.map(y=>dscrArr[y-1]!=null?fRatio(dscrArr[y-1]):'—'),plain:true},
+    {l:'Closing Debt',v:snapYrs.map(y=>fK(debtClose[y-1])),neg:true},
+  ];
+  document.getElementById('summaryBody').innerHTML=rows.map(r=>
+    `<tr class="${r.total?'total':''}"><td>${r.l}</td>${r.v.map(v=>`<td class="${r.neg?'neg':r.pos?'pos':''}">${v}</td>`).join('')}</tr>`
+  ).join('');
+
+  // ── Detail accordions ──
+  const yrs=Array.from({length:life},(_,i)=>i+1);
+
+  // Technical
+  renderTable('dt-tech',[
+    {l:'PV Generation',unit:'MWh',v:pvGen,fmt:(v)=>v.toFixed(0),cls:(v)=>cls(v)},
+    {l:'PV State of Health',unit:'%',v:pvSoH,fmt:(v)=>fPct(v*100),cls:()=>''  },
+    {l:'Battery Usable Capacity',unit:'kWh',v:battUsable,fmt:(v)=>v>0?fK(v,0):'—',cls:()=>''  },
+    {l:'Battery State of Health',unit:'%',v:battSoH,fmt:(v)=>batt_mwh>0?fPct(v*100):'—',cls:()=>''  },
+    {l:'Battery Replaced',unit:'bool',v:battRepl,fmt:(v)=>v?'YES':'—',cls:(v)=>v?'v-warn':''  },
+  ],yrs);
+
+  // Revenue
+  renderTable('dt-rev',[
+    {l:'Sell Price — PPA',unit:'NZD/MWh',v:Array.from({length:life},(_,i)=>ppa_yr1*Math.pow(1+cpi,i)),fmt:(v)=>v.toFixed(1),cls:()=>''  },
+    {l:'PPA Fraction',unit:'%',v:Array.from({length:life},()=>ppa_frac*100),fmt:(v)=>v.toFixed(0)+'%',cls:()=>''  },
+    {l:'Electricity Sales — PPA',unit:'MWh',v:pvGen.map(g=>g*ppa_frac),fmt:(v)=>v.toFixed(0),cls:()=>''  },
+    {l:'PPA Revenue',unit:'NZDk',v:revPPA,fmt:fK,cls:cls,sub:true},
+    {l:'Sell Price — Wholesale',unit:'NZD/MWh',v:Array.from({length:life},(_,i)=>{
+      let w;if(scenario==='gwap')w=i<GWAP.length?GWAP[i]:GWAP[GWAP.length-1]*Math.pow(1.0065,i-GWAP.length+1);
+      else if(scenario==='80cpi')w=80*Math.pow(1+cpi,i);else if(scenario==='100cpi')w=100*Math.pow(1+cpi,i);else w=customP*Math.pow(1+cpi,i);
+      return w;}),fmt:(v)=>v.toFixed(1),cls:()=>''  },
+    {l:'Electricity Sales — Wholesale',unit:'MWh',v:pvGen.map(g=>g*(1-ppa_frac)),fmt:(v)=>v.toFixed(0),cls:()=>''  },
+    {l:'Wholesale Market Revenue',unit:'NZDk',v:revWholesale,fmt:fK,cls:cls,sub:true},
+    {l:'FIR Revenue',unit:'NZDk',v:revFIR,fmt:(v)=>batt_mw>0?fK(v):'—',cls:cls,sub:true},
+    {l:'SIR Revenue',unit:'NZDk',v:revSIR,fmt:(v)=>batt_mw>0?fK(v):'—',cls:cls,sub:true},
+    {l:'Total Revenue',unit:'NZDk',v:revTotal,fmt:fK,cls:cls,total:true},
+  ],yrs);
+
+  // Operating Costs
+  renderTable('dt-opex',[
+    {l:'O&M',unit:'NZDk',v:opOM,fmt:(v)=>fK(-v),cls:(v)=>cls(-v)},
+    {l:'Asset Insurance',unit:'NZDk',v:opIns,fmt:(v)=>fK(-v),cls:(v)=>cls(-v)},
+    {l:'Grid Connection',unit:'NZDk',v:opGrid,fmt:(v)=>fK(-v),cls:(v)=>cls(-v)},
+    {l:'Land Rental',unit:'NZDk',v:opLand,fmt:(v)=>fK(-v),cls:(v)=>cls(-v)},
+    {l:'Site Electricity',unit:'NZDk',v:opSite,fmt:(v)=>fK(-v),cls:(v)=>cls(-v)},
+    {l:'Total Operating Costs',unit:'NZDk',v:opTotal,fmt:(v)=>fK(-v),cls:(v)=>cls(-v),total:true},
+  ],yrs);
+
+  // Unlevered cashflow
+  renderTable('dt-ucf',[
+    {l:'Capex (year 0 = '+fM(-total_capex)+')',unit:'NZDk',v:annCapex,fmt:fK,cls:cls},
+    {l:'Income',unit:'NZDk',v:revTotal,fmt:fK,cls:cls},
+    {l:'Operating Costs',unit:'NZDk',v:opTotal.map(v=>-v),fmt:fK,cls:cls},
+    {l:'EBITDA',unit:'NZDk',v:ebitdaArr,fmt:fK,cls:cls,total:true},
+    {l:'Net Cashflow (excl. equity pay away)',unit:'NZDk',v:netUCF,fmt:fK,cls:cls,total:true},
+  ],yrs);
+
+  // Levered cashflow
+  renderTable('dt-lcf',[
+    {l:'Income',unit:'NZDk',v:revTotal,fmt:fK,cls:cls},
+    {l:'Operating Costs',unit:'NZDk',v:opTotal.map(v=>-v),fmt:fK,cls:cls},
+    {l:'Inverter / Battery Replacement',unit:'NZDk',v:annCapex,fmt:(v)=>v<0?fK(v):'—',cls:cls},
+    {l:'Cash Tax Paid',unit:'NZDk',v:cashTaxPaid,fmt:fK,cls:cls},
+    {l:'Debt Repayment',unit:'NZDk',v:debtRepl,fmt:fK,cls:cls},
+    {l:'Interest',unit:'NZDk',v:debtInt,fmt:fK,cls:cls},
+    {l:'Net Cashflow (levered)',unit:'NZDk',v:netLCF,fmt:fK,cls:cls,total:true},
+    {l:'Cash Yield on Equity',unit:'%',v:netLCF.map(v=>equity_inv>0?v*1e3/equity_inv*100:0),fmt:(v)=>fPct(v),cls:cls},
+  ],yrs);
+
+  // Debt schedule
+  renderTable('dt-debt',[
+    {l:'Opening Debt',unit:'NZDk',v:debtOpen,fmt:fK,cls:()=>''  },
+    {l:'Interest Charge',unit:'NZDk',v:debtInt,fmt:fK,cls:cls},
+    {l:'Repayment',unit:'NZDk',v:debtRepl,fmt:fK,cls:cls},
+    {l:'Closing Debt',unit:'NZDk',v:debtClose,fmt:fK,cls:()=>''  },
+    {l:'DSCR',unit:'x',v:dscrArr,fmt:(v)=>v!=null?fRatio(v):'—',cls:(v)=>v!=null?(v>=1.3?'v-pos':v>=1.1?'v-warn':'v-neg'):''  ,total:true},
+  ],yrs);
+
+  // P&L
+  renderTable('dt-pl',[
+    {l:'Total Income',unit:'NZDk',v:revTotal,fmt:fK,cls:cls},
+    {l:'Operating Costs',unit:'NZDk',v:opTotal.map(v=>-v),fmt:fK,cls:cls},
+    {l:'EBITDA',unit:'NZDk',v:ebitdaArr,fmt:fK,cls:cls,total:true},
+    {l:'Depreciation',unit:'NZDk',v:depArr,fmt:fK,cls:cls},
+    {l:'EBIT',unit:'NZDk',v:ebitArr,fmt:fK,cls:cls,total:true},
+    {l:'Interest Expense',unit:'NZDk',v:intExpArr,fmt:fK,cls:cls},
+    {l:'NPBT',unit:'NZDk',v:npbtArr,fmt:fK,cls:cls,total:true},
+    {l:'Tax',unit:'NZDk',v:taxPLArr,fmt:fK,cls:cls},
+    {l:'NPAT',unit:'NZDk',v:npatArr,fmt:fK,cls:cls,total:true},
+  ],yrs);
+
+  // Tax
+  renderTable('dt-tax',[
+    {l:'Opening Tax Losses',unit:'NZDk',v:tlOpen,fmt:fK,cls:()=>''  },
+    {l:'Losses Generated',unit:'NZDk',v:tlGen,fmt:fK,cls:cls},
+    {l:'Losses Utilised',unit:'NZDk',v:tlUtil,fmt:fK,cls:cls},
+    {l:'Closing Tax Losses',unit:'NZDk',v:tlClose,fmt:fK,cls:()=>''  },
+    {l:'Taxable Income',unit:'NZDk',v:taxInc,fmt:fK,cls:cls,total:true},
+    {l:'Cash Tax Paid',unit:'NZDk',v:cashTax.map(v=>-v),fmt:fK,cls:cls},
+  ],yrs);
+}
+
+// ── Render a detail accordion table ──
+function renderTable(id,rows,yrs){
+  const tbl=document.getElementById(id);
+  const head='<thead><tr><th>Metric</th>'+yrs.map(y=>`<th>Y${y}</th>`).join('')+'</tr></thead>';
+  const body='<tbody>'+rows.map(r=>{
+    const trCls=r.total?'dt-total':r.sub?'dt-sub':'';
+    const cells=r.v.map((v,i)=>{
+      const fmtd=r.fmt(v);
+      const c=r.cls?r.cls(v):'';
+      return`<td class="${c}">${fmtd}</td>`;
+    }).join('');
+    return`<tr class="${trCls}"><td>${r.l}${r.unit&&r.unit!=='NZDk'&&r.unit!=='bool'?` <span style="color:#9aa49e;font-size:0.68rem">(${r.unit})</span>`:''}</td>${cells}</tr>`;
+  }).join('')+'</tbody>';
+  tbl.innerHTML=head+body;
+}
+
+// ── KPI setter ──
+function setHero(tileId,valId,irr,wacc){
+  const tile=document.getElementById(tileId),el=document.getElementById(valId);
+  tile.classList.remove('good','warn','bad');
+  if(!isFinite(irr)){el.textContent='—';return;}
+  el.textContent=(irr*100).toFixed(1)+'%';
+  tile.classList.add(irr>=wacc+0.01?'good':irr>=wacc-0.01?'warn':'bad');
+}
+
+function setKPI(valId,tileId,val,suffix,thresholds,isNPV=false){
+  const el=document.getElementById(valId),tile=document.getElementById(tileId);
+  tile.classList.remove('good','warn','bad');
+  if(val===null||!isFinite(val)){el.textContent='—';return;}
+  if(suffix==='%') el.textContent=(val*100).toFixed(1)+'%';
+  else if(suffix==='M') el.textContent=(val>=0?'+':'')+fM(val);
+  else if(suffix==='x') el.textContent=val.toFixed(2)+'x';
+  if(isNPV) tile.classList.add(val>=0?'good':'bad');
+  else tile.classList.add(val>=thresholds[0]?'good':val>=thresholds[1]?'warn':'bad');
+}
+
+// ── Chart ──
+let chart=null;
+function updateChart(revTotal,opTotal,dsArr,netLCF,life){
+  const labels=Array.from({length:life},(_,i)=>`Y${i+1}`);
+  const toM=arr=>arr.map(v=>+(v/1e3).toFixed(3));
+  let cum=0;
+  const cumFCF=netLCF.map(v=>{cum+=v;return+(cum/1e3).toFixed(3);});
+  const data={labels,datasets:[
+    {label:'Revenue',data:toM(revTotal),backgroundColor:'rgba(26,92,58,0.75)',borderRadius:2,type:'bar',yAxisID:'y',order:2},
+    {label:'OPEX',data:toM(opTotal).map(v=>-v/1e3),backgroundColor:'rgba(107,117,112,0.45)',borderRadius:2,type:'bar',yAxisID:'y',order:2},
+    {label:'Debt Service',data:toM(dsArr).map(v=>-v),backgroundColor:'rgba(200,121,65,0.5)',borderRadius:2,type:'bar',yAxisID:'y',order:2},
+    {label:'Cumulative FCF',data:cumFCF,borderColor:'#4fbe85',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',order:1,yAxisID:'y2'},
+  ]};
+  const opts={responsive:true,maintainAspectRatio:true,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{position:'top',labels:{font:{family:"'DM Sans',sans-serif",size:11},boxWidth:12,padding:12}},
+    tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: NZD ${ctx.parsed.y.toFixed(2)}M`}}},
+    scales:{
+      x:{stacked:true,grid:{display:false},ticks:{font:{size:10},maxTicksLimit:16}},
+      y:{stacked:true,title:{display:true,text:'NZD M/yr',font:{size:10}},grid:{color:'rgba(14,18,16,0.06)'},ticks:{font:{size:10}}},
+      y2:{position:'right',title:{display:true,text:'Cum. FCF (NZD M)',font:{size:10}},grid:{drawOnChartArea:false},ticks:{font:{size:10}}},
+    }};
+  if(chart){chart.data=data;chart.options=opts;chart.update();}
+  else chart=new Chart(document.getElementById('cashflowChart'),{type:'bar',data,options:opts});
+}
+
+// ── Input sync ──
+const pairs=[
+  ['pvSize','pvSizeN'],['pvYield','pvYieldN'],['pvCost','pvCostN'],
+  ['degradation','degradationN'],['projectLife','projectLifeN'],['invReplYear','invReplYearN'],
+  ['battMW','battMWN'],['battMWh','battMWhN'],['battCost','battCostN'],
+  ['ppaFraction','ppaFractionN'],['ppaPrice','ppaPriceN'],['retailPrice','retailPriceN'],['cpi','cpiN'],
+  ['omCost','omCostN'],['insurance','insuranceN'],['opexEsc','opexEscN'],
+  ['gearing','gearingN'],['debtRate','debtRateN'],['debtTenor','debtTenorN'],
+  ['wacc','waccN'],['taxRate','taxRateN'],
+];
+pairs.forEach(([r,n])=>{
+  const re=document.getElementById(r),ne=document.getElementById(n);
+  if(!re||!ne)return;
+  re.addEventListener('input',()=>{ne.value=re.value;calculate();});
+  ne.addEventListener('input',()=>{if(re)re.value=ne.value;calculate();});
+});
+['gridCapexN','devFeeN','gridOpexN','landN','siteElecN','firRateN','sirRateN','customPriceN'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('input',calculate);
+});
+document.getElementById('priceScenario').addEventListener('change',function(){
+  document.getElementById('customPriceRow').style.display=this.value==='custom'?'block':'none';
+  calculate();
+});
+
+calculate();
+</script>
+</body>
+</html>
