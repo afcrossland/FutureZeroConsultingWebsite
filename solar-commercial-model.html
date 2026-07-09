@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <style>
 :root {
   --black: #0e1210; --white: #f5f3ee; --green: #1a5c3a; --green-mid: #2d8c5a;
@@ -22,12 +23,15 @@ nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center
 .nav-logo { font-family: var(--serif); font-size: 1.15rem; color: var(--green); text-decoration: none; }
 .nav-back { font-size: 0.85rem; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 0.4rem; transition: color 0.2s; }
 .nav-back:hover { color: var(--green); }
+.nav-right { display: flex; align-items: center; gap: 1rem; }
+.btn-dl { font-family: var(--sans); font-size: 0.8rem; padding: 0.4rem 0.9rem; background: var(--green); color: var(--white); border: none; border-radius: 0.35rem; cursor: pointer; transition: background 0.15s; }
+.btn-dl:hover { background: var(--green-mid); }
+.btn-dl:disabled { opacity: 0.5; cursor: wait; }
 
-.model-header { background: var(--green); padding: 2.5rem 5vw 2rem; color: var(--white); }
-.model-header h1 { font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 400; margin-bottom: 0.4rem; }
+.model-header { background: var(--green); padding: 0.6rem 5vw; color: var(--white); display: flex; align-items: baseline; gap: 1.5rem; }
+.model-header h1 { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; white-space: nowrap; }
 .model-header h1 em { color: var(--green-accent); font-style: italic; }
-.model-header p { font-size: 0.875rem; color: rgba(255,255,255,0.6); font-weight: 300; max-width: 60ch; }
-.disclaimer-badge { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.4rem 0.9rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.75); }
+.model-header p { font-size: 0.72rem; color: rgba(255,255,255,0.5); font-weight: 300; }
 
 .model-body { display: grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 8rem); align-items: start; }
 
@@ -37,6 +41,7 @@ nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center
 .inputs-panel::-webkit-scrollbar-thumb { background: #ccc8be; border-radius: 2px; }
 .input-section { margin-bottom: 1.5rem; }
 .input-section-title { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green-mid); margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid #ccc8be; display: flex; align-items: center; gap: 0.5rem; }
+.input-sub-title { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0.75rem 0 0.35rem; padding-top: 0.5rem; border-top: 1px solid rgba(200,196,190,0.5); }
 .input-section-title::before { content: ''; display: block; width: 1.5rem; height: 1px; background: var(--green-mid); }
 .input-row { margin-bottom: 0.75rem; }
 .input-row label { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; font-weight: 300; }
@@ -52,10 +57,20 @@ nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center
 .capex-row strong { color: var(--black); font-weight: 500; }
 .capex-total { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.5rem 0 0; font-weight: 500; }
 
+/* LHS input accordions */
+details.inp-accord { border: 1px solid #ccc8be; border-radius: 0.4rem; margin-bottom: 0.4rem; background: rgba(255,255,255,0.28); }
+details.inp-accord[open] { background: rgba(255,255,255,0.48); }
+details.inp-accord > summary { padding: 0.55rem 0.75rem; cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; user-select: none; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-mid); }
+details.inp-accord > summary::after { content: '▾'; color: var(--muted); font-size: 0.7rem; transition: transform 0.2s; flex-shrink: 0; }
+details.inp-accord[open] > summary::after { transform: rotate(-180deg); }
+details.inp-accord > summary::-webkit-details-marker { display: none; }
+.inp-accord-body { padding: 0.25rem 0.75rem 0.75rem; }
+
 /* RESULTS */
 .results-panel { padding: 1.5rem 2rem; min-width: 0; }
 
 /* KPI */
+#kpiBar { position: sticky; top: 57px; z-index: 50; transition: background 0.2s; }
 .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; margin-bottom: 1.75rem; }
 .kpi-tile { background: var(--white); border: 1.5px solid var(--stone); border-radius: 0.6rem; padding: 1rem 1rem 0.9rem; transition: box-shadow 0.2s; }
 .kpi-tile:hover { box-shadow: 0 4px 20px rgba(14,18,16,0.08); }
@@ -65,10 +80,23 @@ nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center
 .kpi-tile.good .kpi-value { color: var(--green); }
 .kpi-tile.warn .kpi-value { color: var(--amber); }
 .kpi-tile.bad  .kpi-value { color: var(--red-soft); }
+/* Compact sticky state */
+#kpiBar.kpi-compact { background: #fff; margin: 0 -2rem; padding: 0 2rem; border-bottom: 1px solid var(--stone); box-shadow: 0 2px 12px rgba(14,18,16,0.07); }
+#kpiBar.kpi-compact .kpi-grid { display: flex; gap: 0; margin-bottom: 0; }
+#kpiBar.kpi-compact .kpi-tile { background: transparent; border: none; border-right: 1px solid var(--stone); border-radius: 0; padding: 0.45rem 1.2rem; flex: 1; display: flex; align-items: center; gap: 0.55rem; box-shadow: none !important; }
+#kpiBar.kpi-compact .kpi-tile:last-child { border-right: none; }
+#kpiBar.kpi-compact .kpi-label { font-size: 0.58rem; color: var(--muted); margin-bottom: 0; white-space: nowrap; }
+#kpiBar.kpi-compact .kpi-value { font-size: 0.95rem; color: var(--black); margin-bottom: 0; }
+#kpiBar.kpi-compact .kpi-sub { display: none; }
+#kpiBar.kpi-compact .kpi-tile.good .kpi-value { color: var(--green); }
+#kpiBar.kpi-compact .kpi-tile.warn .kpi-value { color: var(--amber); }
+#kpiBar.kpi-compact .kpi-tile.bad  .kpi-value { color: var(--red-soft); }
 
 /* CHART + SUMMARY */
-.chart-wrap, .summary-wrap { background: var(--white); border: 1.5px solid var(--stone); border-radius: 0.75rem; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
-.chart-wrap canvas { max-height: 260px; }
+.charts-row { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.25rem; }
+.chart-wrap, .summary-wrap { background: var(--white); border: 1.5px solid var(--stone); border-radius: 0.75rem; padding: 1.25rem 1.5rem; }
+.summary-wrap { margin-bottom: 1.25rem; }
+.chart-wrap { position: relative; height: 280px; }
 .section-title { font-size: 0.75rem; font-weight: 500; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem; }
 .summary-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
 .summary-table th { text-align: left; padding: 0.35rem 0.5rem; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--stone); white-space: nowrap; }
@@ -84,11 +112,12 @@ nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center
 
 details.accord { border: 1.5px solid var(--stone); border-radius: 0.6rem; margin-bottom: 0.6rem; background: var(--white); overflow: hidden; }
 details.accord[open] { border-color: #b8c8c0; }
-details.accord > summary { padding: 0.75rem 1.25rem; font-size: 0.8rem; font-weight: 500; color: var(--black); cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; user-select: none; }
-details.accord > summary::after { content: '▾'; color: var(--muted); font-size: 0.75rem; transition: transform 0.2s; }
+details.accord > summary { padding: 0.75rem 1.25rem; cursor: pointer; list-style: none; display: flex; align-items: baseline; justify-content: space-between; user-select: none; gap: 0.5rem; }
+details.accord > summary::after { content: '▾'; color: var(--muted); font-size: 0.75rem; transition: transform 0.2s; flex-shrink: 0; }
 details.accord[open] > summary::after { transform: rotate(-180deg); }
 details.accord > summary::-webkit-details-marker { display: none; }
-details.accord > summary .accord-tag { font-size: 0.65rem; font-weight: 400; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.accord-title { font-size: 0.8rem; font-weight: 500; color: var(--black); }
+.accord-tag { font-size: 0.72rem; font-weight: 300; color: var(--muted); flex: 1; }
 
 .table-scroll { overflow-x: auto; padding: 0 0 0.75rem; }
 .detail-table { border-collapse: collapse; font-size: 0.74rem; min-width: 100%; }
@@ -100,14 +129,50 @@ details.accord > summary .accord-tag { font-size: 0.65rem; font-weight: 400; col
 .detail-table tr.dt-total td:first-child { background: rgba(232,228,220,0.25); }
 .detail-table tr.dt-sub td { color: var(--muted); font-style: italic; font-size: 0.7rem; }
 .detail-table tr.dt-sub td:first-child { padding-left: 1.25rem; }
+.detail-table tr.dt-subtotal td { font-weight: 600; font-style: italic; color: var(--black); border-top: 1px solid rgba(200,196,190,0.7); border-bottom: 1px solid rgba(200,196,190,0.7); }
+.detail-table tr.dt-subtotal td:first-child { padding-left: 1.25rem; }
 .detail-table .v-pos { color: var(--green-mid); }
 .detail-table .v-neg { color: var(--red-soft); }
 .detail-table .v-zero { color: #b0bdb8; }
 .detail-table .v-warn { color: var(--amber); }
+.detail-table tbody tr.cr { cursor: pointer; }
+.detail-table tbody tr.cr:hover td { background: rgba(79,190,133,0.07) !important; }
+.detail-table tbody tr.row-active td { background: rgba(79,190,133,0.14) !important; outline: none; }
+.detail-table tbody tr.row-active td:first-child { color: var(--green-mid) !important; font-weight: 500; }
+
+/* ROW CHART PANEL */
+#rowPanel { position: fixed; bottom: 0; left: 0; right: 0; height: 300px; background: var(--white); border-top: 2px solid var(--green-accent); box-shadow: 0 -6px 40px rgba(14,18,16,0.18); z-index: 400; transform: translateY(100%); transition: transform 0.22s cubic-bezier(.4,0,.2,1); display: grid; grid-template-rows: auto 1fr; gap: 0.4rem; padding: 0.75rem 2rem 1rem; }
+#rowPanel.open { transform: translateY(0); }
+.rp-hd { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 1.8rem; }
+#rpLegend { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; flex: 1; min-width: 0; }
+.rp-chip { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; font-family: var(--sans); background: rgba(14,18,16,0.05); border-radius: 2rem; padding: 0.12rem 0.45rem 0.12rem 0.3rem; color: var(--black); white-space: nowrap; max-width: 18rem; overflow: hidden; text-overflow: ellipsis; }
+.rp-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--chip-color,#4fbe85); flex-shrink: 0; }
+.rp-chip-x { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 0.9rem; line-height: 1; padding: 0 0 0 0.15rem; font-family: var(--sans); }
+.rp-chip-x:hover { color: var(--black); }
+.rp-actions { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
+.rp-close { background: none; border: 1px solid var(--stone); border-radius: 0.3rem; cursor: pointer; color: var(--muted); font-size: 0.78rem; padding: 0.2rem 0.6rem; font-family: var(--sans); }
+.rp-close:hover { background: var(--stone); color: var(--black); }
+.rp-body { position: relative; min-height: 0; }
+/* Accordion chart icon */
+.accord-chart-btn { background: none; border: 1px solid transparent; border-radius: 0.3rem; cursor: pointer; color: var(--muted); padding: 0.25rem 0.4rem; line-height: 0; flex-shrink: 0; transition: all 0.15s; display: inline-flex; align-items: center; }
+.accord-chart-btn:hover { border-color: var(--green-accent); color: var(--green); background: var(--green-light); }
+/* Summary table clickable rows */
+.summary-table tbody tr.cr { cursor: pointer; }
+.summary-table tbody tr.cr:hover td { background: rgba(79,190,133,0.07) !important; }
+.summary-table tbody tr.row-active td { background: rgba(79,190,133,0.14) !important; }
+
+/* SCENARIO BAR */
+.scenario-bar { display: flex; align-items: center; gap: 1.25rem; padding: 0.7rem 5vw; background: var(--black); border-bottom: 1px solid rgba(79,190,133,0.2); overflow-x: auto; white-space: nowrap; }
+.scenario-bar::-webkit-scrollbar { height: 0; }
+.scenario-bar-label { font-size: 0.62rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); flex-shrink: 0; }
+.stab { font-family: var(--sans); font-size: 0.78rem; padding: 0.35rem 1rem; border: 1px solid rgba(255,255,255,0.18); border-radius: 2rem; cursor: pointer; background: transparent; color: rgba(255,255,255,0.55); transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+.stab:hover { border-color: var(--green-accent); color: var(--green-accent); }
+.stab.active { background: var(--green-accent); border-color: var(--green-accent); color: var(--black); font-weight: 500; }
+.stab-sub { font-size: 0.65rem; opacity: 0.7; font-weight: 300; }
 
 /* SCENARIO HEROES */
 .scenario-heroes { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.75rem; margin-bottom: 1.25rem; }
-.scenario-hero { background: var(--white); border: 1.5px solid var(--stone); border-radius: 0.6rem; padding: 1rem 1rem 0.9rem; position: relative; overflow: hidden; transition: box-shadow 0.2s; }
+.scenario-hero { background: var(--white); border: 1.5px solid var(--stone); border-radius: 0.6rem; padding: 1.3rem 1rem 1.2rem; position: relative; overflow: hidden; transition: box-shadow 0.2s; }
 .scenario-hero:hover { box-shadow: 0 4px 20px rgba(14,18,16,0.08); }
 .scenario-hero::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: var(--stone); border-radius: 0.6rem 0.6rem 0 0; }
 .hero-ws::before  { background: var(--green-mid); }
@@ -135,107 +200,29 @@ details.accord > summary .accord-tag { font-size: 0.65rem; font-weight: 400; col
 
 <nav>
   <a href="index.html" class="nav-logo">Future Zero Consulting</a>
-  <a href="index.html#modelling" class="nav-back">← Modelling tools</a>
+  <div class="nav-right">
+    <a href="index.html#modelling" class="nav-back">← Modelling tools</a>
+    <button class="btn-dl" id="btnDownloadExcel">↓ Download Excel</button>
+  </div>
 </nav>
 
 <header class="model-header">
   <h1>NZ Solar <em>Commercial Model</em></h1>
-  <p>40-year cashflow modelling for utility-scale solar and battery projects in New Zealand — based on real NZ wholesale price forecasts, yield data, and financing structures.</p>
-  <span class="disclaimer-badge">⚠ Feasibility screening only — not for investment decisions</span>
+  <p>Feasibility screening only — not for investment decisions</p>
 </header>
+
+<div class="scenario-bar">
+  <span class="scenario-bar-label">Scenario</span>
+  <button class="stab active" data-scenario="base">25MW · Base Case <span class="stab-sub">70% PPA</span></button>
+  <button class="stab" data-scenario="large">130MW · Scale <span class="stab-sub">70% PPA</span></button>
+  <button class="stab" data-scenario="merch25">25MW · Merchant <span class="stab-sub">100% spot</span></button>
+  <button class="stab" data-scenario="merch130">130MW · Merchant <span class="stab-sub">100% spot</span></button>
+</div>
 
 <div class="model-body">
 <aside class="inputs-panel">
 
-  <div class="input-section">
-    <div class="input-section-title">Solar System</div>
-    <div class="input-row"><label>PV Size <span class="unit">MWp</span></label>
-      <div class="input-control"><input type="range" id="pvSize" min="1" max="100" value="25" step="1"><input type="number" id="pvSizeN" value="25" step="1"></div></div>
-    <div class="input-row"><label>Yield <span class="unit">kWh/kWp/yr</span></label>
-      <div class="input-control"><input type="range" id="pvYield" min="1200" max="1800" value="1514" step="10"><input type="number" id="pvYieldN" value="1514" step="10"></div></div>
-    <div class="input-row"><label>PV Cost <span class="unit">NZD/Wp</span></label>
-      <div class="input-control"><input type="range" id="pvCost" min="0.60" max="3.00" value="1.41" step="0.01"><input type="number" id="pvCostN" value="1.41" step="0.01"></div></div>
-    <div class="input-row"><label>Degradation <span class="unit">%/yr</span></label>
-      <div class="input-control"><input type="range" id="degradation" min="0.1" max="1.5" value="0.4" step="0.1"><input type="number" id="degradationN" value="0.4" step="0.1"></div></div>
-    <div class="input-row"><label>Project Life <span class="unit">years</span></label>
-      <div class="input-control"><input type="range" id="projectLife" min="15" max="40" value="31" step="1"><input type="number" id="projectLifeN" value="31" step="1"></div></div>
-    <div class="input-row"><label>Inverter Replacement <span class="unit">yr</span></label>
-      <div class="input-control"><input type="range" id="invReplYear" min="8" max="20" value="15" step="1"><input type="number" id="invReplYearN" value="15" step="1"></div></div>
-  </div>
-
-  <div class="input-section">
-    <div class="input-section-title">Battery (optional)</div>
-    <div class="input-row"><label>Battery Power <span class="unit">MW</span></label>
-      <div class="input-control"><input type="range" id="battMW" min="0" max="100" value="0" step="1"><input type="number" id="battMWN" value="0" step="1"></div></div>
-    <div class="input-row"><label>Battery Capacity <span class="unit">MWh</span></label>
-      <div class="input-control"><input type="range" id="battMWh" min="0" max="400" value="0" step="10"><input type="number" id="battMWhN" value="0" step="10"></div></div>
-    <div class="input-row"><label>Battery Cost <span class="unit">NZD/kWh</span></label>
-      <div class="input-control"><input type="range" id="battCost" min="100" max="600" value="350" step="10"><input type="number" id="battCostN" value="350" step="10"></div></div>
-  </div>
-
-  <div class="input-section">
-    <div class="input-section-title">Revenue</div>
-    <div class="input-row"><label>Wholesale Price Scenario</label>
-      <select id="priceScenario">
-        <option value="gwap">NZ GWAP (forecast)</option>
-        <option value="80cpi">$80/MWh + CPI</option>
-        <option value="100cpi">$100/MWh + CPI</option>
-        <option value="custom">Custom flat + CPI</option>
-      </select></div>
-    <div class="input-row" id="customPriceRow" style="display:none"><label>Custom Price <span class="unit">NZD/MWh</span></label>
-      <div class="input-control input-full"><input type="number" id="customPriceN" value="120" step="5"></div></div>
-    <div class="input-row"><label>PPA Fraction <span class="unit">% of gen</span></label>
-      <div class="input-control"><input type="range" id="ppaFraction" min="0" max="100" value="70" step="5"><input type="number" id="ppaFractionN" value="70" step="5"></div></div>
-    <div class="input-row"><label>PPA Price (yr 1) <span class="unit">NZD/MWh</span></label>
-      <div class="input-control"><input type="range" id="ppaPrice" min="50" max="300" value="125" step="5"><input type="number" id="ppaPriceN" value="125" step="5"></div></div>
-    <div class="input-row"><label>FIR Rate <span class="unit">NZD/MW/yr</span></label>
-      <div class="input-control input-full"><input type="number" id="firRateN" value="20000" step="1000"></div></div>
-    <div class="input-row"><label>SIR Rate <span class="unit">NZD/MW/yr</span></label>
-      <div class="input-control input-full"><input type="number" id="sirRateN" value="5000" step="1000"></div></div>
-    <div class="input-row"><label>Local Retail Price (yr 1) <span class="unit">NZD/MWh</span></label>
-      <div class="input-control"><input type="range" id="retailPrice" min="50" max="350" value="175" step="5"><input type="number" id="retailPriceN" value="175" step="5"></div></div>
-    <div class="input-row"><label>CPI / Escalation <span class="unit">%/yr</span></label>
-      <div class="input-control"><input type="range" id="cpi" min="0" max="6" value="2.1" step="0.1"><input type="number" id="cpiN" value="2.1" step="0.1"></div></div>
-  </div>
-
-  <div class="input-section">
-    <div class="input-section-title">Capital Costs</div>
-    <div class="input-row"><label>Grid Connection <span class="unit">NZD k</span></label>
-      <div class="input-control input-full"><input type="number" id="gridCapexN" value="1800" step="100"></div></div>
-    <div class="input-row"><label>Development Fee <span class="unit">NZD k</span></label>
-      <div class="input-control input-full"><input type="number" id="devFeeN" value="700" step="50"></div></div>
-  </div>
-
-  <div class="input-section">
-    <div class="input-section-title">Operating Costs</div>
-    <div class="input-row"><label>O&amp;M <span class="unit">NZD k/MWp/yr</span></label>
-      <div class="input-control"><input type="range" id="omCost" min="2" max="25" value="8" step="0.5"><input type="number" id="omCostN" value="8" step="0.5"></div></div>
-    <div class="input-row"><label>Insurance <span class="unit">NZD k/MWp/yr</span></label>
-      <div class="input-control"><input type="range" id="insurance" min="2" max="20" value="9.3" step="0.1"><input type="number" id="insuranceN" value="9.3" step="0.1"></div></div>
-    <div class="input-row"><label>Grid Connection <span class="unit">NZD k/yr</span></label>
-      <div class="input-control input-full"><input type="number" id="gridOpexN" value="50" step="5"></div></div>
-    <div class="input-row"><label>Land Rental <span class="unit">NZD k/yr</span></label>
-      <div class="input-control input-full"><input type="number" id="landN" value="25" step="5"></div></div>
-    <div class="input-row"><label>Site Electricity <span class="unit">NZD k/yr</span></label>
-      <div class="input-control input-full"><input type="number" id="siteElecN" value="10" step="2"></div></div>
-    <div class="input-row"><label>OPEX Escalation <span class="unit">%/yr</span></label>
-      <div class="input-control"><input type="range" id="opexEsc" min="0" max="5" value="2.1" step="0.1"><input type="number" id="opexEscN" value="2.1" step="0.1"></div></div>
-  </div>
-
-  <div class="input-section">
-    <div class="input-section-title">Finance &amp; Tax</div>
-    <div class="input-row"><label>Gearing <span class="unit">%</span></label>
-      <div class="input-control"><input type="range" id="gearing" min="0" max="90" value="68" step="1"><input type="number" id="gearingN" value="68" step="1"></div></div>
-    <div class="input-row"><label>Debt Rate <span class="unit">%</span></label>
-      <div class="input-control"><input type="range" id="debtRate" min="2" max="15" value="6.25" step="0.25"><input type="number" id="debtRateN" value="6.25" step="0.25"></div></div>
-    <div class="input-row"><label>Debt Tenor <span class="unit">years</span></label>
-      <div class="input-control"><input type="range" id="debtTenor" min="5" max="25" value="15" step="1"><input type="number" id="debtTenorN" value="15" step="1"></div></div>
-    <div class="input-row"><label>Equity WACC <span class="unit">%</span></label>
-      <div class="input-control"><input type="range" id="wacc" min="4" max="20" value="9" step="0.25"><input type="number" id="waccN" value="9" step="0.25"></div></div>
-    <div class="input-row"><label>Corporation Tax Rate <span class="unit">%</span></label>
-      <div class="input-control"><input type="range" id="taxRate" min="0" max="35" value="28" step="1"><input type="number" id="taxRateN" value="28" step="1"></div></div>
-  </div>
-
+  <!-- ── Capex Summary ── -->
   <div class="input-section">
     <div class="input-section-title">Capex Summary</div>
     <div class="capex-row"><span>PV EPC</span><strong id="capexPV">—</strong></div>
@@ -243,7 +230,153 @@ details.accord > summary .accord-tag { font-size: 0.65rem; font-weight: 400; col
     <div class="capex-row"><span>Grid Connection</span><strong id="capexGrid">—</strong></div>
     <div class="capex-row"><span>Development Fee</span><strong id="capexDev">—</strong></div>
     <div class="capex-total"><span>Total Capex</span><strong id="capexTotal">—</strong></div>
+    <div class="capex-row" style="border-top:1px solid #ccc8be;margin-top:0.4rem;padding-top:0.4rem"><span>Total Debt</span><strong id="capexDebt">—</strong></div>
+    <div class="capex-row"><span>Equity</span><strong id="capexEquity">—</strong></div>
   </div>
+
+  <!-- ── Key Inputs (always visible) ── -->
+  <div class="input-section">
+    <div class="input-section-title">Key Inputs</div>
+    <div class="input-row"><label>PV Size <span class="unit">MWp</span></label>
+      <div class="input-control"><input type="range" id="pvSize" min="1" max="200" value="25" step="1"><input type="number" id="pvSizeN" value="25" step="1"></div></div>
+    <div class="input-row"><label>Yield <span class="unit">kWh/kWp/yr</span></label>
+      <div class="input-control"><input type="range" id="pvYield" min="1200" max="1800" value="1550" step="10"><input type="number" id="pvYieldN" value="1550" step="10"></div></div>
+    <div class="input-row"><label>PV Cost <span class="unit">NZD/Wp</span></label>
+      <div class="input-control"><input type="range" id="pvCost" min="0.60" max="3.00" value="1.41" step="0.01"><input type="number" id="pvCostN" value="1.41" step="0.01"></div></div>
+    <div class="input-sub-title">Revenue</div>
+    <div class="input-row"><label>Retail Fraction <span class="unit">% of gen</span></label>
+      <div class="input-control"><input type="range" id="retailFraction" min="0" max="80" value="30" step="5"><input type="number" id="retailFractionN" value="30" step="5"></div></div>
+    <div class="input-row"><label>Retail Price (yr 1) <span class="unit">NZD/MWh</span></label>
+      <div class="input-control"><input type="range" id="retailPrice" min="100" max="600" value="320" step="5"><input type="number" id="retailPriceN" value="320" step="5"></div></div>
+    <div class="input-row"><label>PPA Fraction <span class="unit">% of gen</span></label>
+      <div class="input-control"><input type="range" id="ppaFraction" min="0" max="100" value="70" step="5"><input type="number" id="ppaFractionN" value="70" step="5"></div></div>
+    <div class="input-row"><label>PPA Price (yr 1) <span class="unit">NZD/MWh</span></label>
+      <div class="input-control"><input type="range" id="ppaPrice" min="50" max="300" value="125" step="5"><input type="number" id="ppaPriceN" value="125" step="5"></div></div>
+    <div class="input-sub-title">Finance</div>
+    <div class="input-row"><label>Senior Gearing <span class="unit">%</span></label>
+      <div class="input-control"><input type="range" id="gearing" min="0" max="90" value="68" step="1"><input type="number" id="gearingN" value="68" step="1"></div></div>
+    <div class="input-row"><label>Equity WACC <span class="unit">%</span></label>
+      <div class="input-control"><input type="range" id="wacc" min="4" max="20" value="9" step="0.25"><input type="number" id="waccN" value="9" step="0.25"></div></div>
+    <div class="input-row"><label>Corporation Tax <span class="unit">%</span></label>
+      <div class="input-control"><input type="range" id="taxRate" min="0" max="35" value="17.5" step="0.5"><input type="number" id="taxRateN" value="17.5" step="0.5"></div></div>
+  </div>
+
+  <!-- ── Detail accordions ── -->
+  <details class="inp-accord">
+    <summary>Technical</summary>
+    <div class="inp-accord-body">
+      <div class="input-row"><label>System Availability <span class="unit">%</span></label>
+        <div class="input-control"><input type="range" id="systemAvail" min="90" max="100" value="97.7" step="0.1"><input type="number" id="systemAvailN" value="97.7" step="0.1"></div></div>
+      <div class="input-row"><label>Degradation <span class="unit">%/yr</span></label>
+        <div class="input-control"><input type="range" id="degradation" min="0.1" max="1.5" value="0.4" step="0.1"><input type="number" id="degradationN" value="0.4" step="0.1"></div></div>
+      <div class="input-row"><label>Project Life <span class="unit">years</span></label>
+        <div class="input-control"><input type="range" id="projectLife" min="15" max="40" value="30" step="1"><input type="number" id="projectLifeN" value="30" step="1"></div></div>
+      <div class="input-row"><label>Inverter Replacement <span class="unit">yr</span></label>
+        <div class="input-control"><input type="range" id="invReplYear" min="8" max="20" value="15" step="1"><input type="number" id="invReplYearN" value="15" step="1"></div></div>
+    </div>
+  </details>
+
+  <details class="inp-accord">
+    <summary>Battery (optional)</summary>
+    <div class="inp-accord-body">
+      <div class="input-row"><label>Battery Power <span class="unit">MW</span></label>
+        <div class="input-control"><input type="range" id="battMW" min="0" max="100" value="0" step="1"><input type="number" id="battMWN" value="0" step="1"></div></div>
+      <div class="input-row"><label>Battery Capacity <span class="unit">MWh</span></label>
+        <div class="input-control"><input type="range" id="battMWh" min="0" max="400" value="0" step="10"><input type="number" id="battMWhN" value="0" step="10"></div></div>
+      <div class="input-row"><label>Battery Cost <span class="unit">NZD/kWh</span></label>
+        <div class="input-control"><input type="range" id="battCost" min="100" max="1200" value="600" step="10"><input type="number" id="battCostN" value="600" step="10"></div></div>
+    </div>
+  </details>
+
+  <details class="inp-accord">
+    <summary>Revenue Detail</summary>
+    <div class="inp-accord-body">
+      <div class="input-row"><label>Wholesale Price Scenario</label>
+        <select id="priceScenario">
+          <option value="gwap">NZ GWAP (forecast)</option>
+          <option value="80cpi">$80/MWh + CPI</option>
+          <option value="100cpi">$100/MWh + CPI</option>
+          <option value="custom">Custom flat + CPI</option>
+        </select></div>
+      <div class="input-row" id="customPriceRow" style="display:none"><label>Custom Price <span class="unit">NZD/MWh</span></label>
+        <div class="input-control input-full"><input type="number" id="customPriceN" value="120" step="5"></div></div>
+      <div class="input-sub-title">Durations</div>
+      <div class="input-row"><label>Retail Duration <span class="unit">yrs</span></label>
+        <div class="input-control input-full"><input type="number" id="retailDurationN" value="10" step="1" min="1" max="40"></div></div>
+      <div class="input-row"><label>PPA Duration <span class="unit">yrs</span></label>
+        <div class="input-control input-full"><input type="number" id="ppaDurationN" value="8" step="1" min="1" max="40"></div></div>
+      <div class="input-sub-title">Ancillary (BESS only)</div>
+      <div class="input-row"><label>FIR Rate <span class="unit">NZD/MW/yr</span></label>
+        <div class="input-control input-full"><input type="number" id="firRateN" value="20000" step="1000"></div></div>
+      <div class="input-row"><label>SIR Rate <span class="unit">NZD/MW/yr</span></label>
+        <div class="input-control input-full"><input type="number" id="sirRateN" value="5000" step="1000"></div></div>
+      <div class="input-sub-title">Escalation</div>
+      <div class="input-row"><label>CPI / Inflation <span class="unit">%/yr</span></label>
+        <div class="input-control"><input type="range" id="cpi" min="0" max="6" value="2.1" step="0.1"><input type="number" id="cpiN" value="2.1" step="0.1"></div></div>
+    </div>
+  </details>
+
+  <details class="inp-accord">
+    <summary>Capital Costs</summary>
+    <div class="inp-accord-body">
+      <div class="input-row"><label>Grid Connection <span class="unit">NZD k</span></label>
+        <div class="input-control input-full"><input type="number" id="gridCapexN" value="1800" step="100"></div></div>
+      <div class="input-row"><label>Development Fee <span class="unit">NZD k</span></label>
+        <div class="input-control input-full"><input type="number" id="devFeeN" value="700" step="50"></div></div>
+    </div>
+  </details>
+
+  <details class="inp-accord">
+    <summary>Operating Costs</summary>
+    <div class="inp-accord-body">
+      <div class="input-row"><label>O&amp;M <span class="unit">NZD k/MWp/yr</span></label>
+        <div class="input-control"><input type="range" id="omCost" min="2" max="25" value="8" step="0.5"><input type="number" id="omCostN" value="8" step="0.5"></div></div>
+      <div class="input-row"><label>Insurance <span class="unit">NZD k/MWp/yr</span></label>
+        <div class="input-control"><input type="range" id="insurance" min="2" max="20" value="9.3" step="0.1"><input type="number" id="insuranceN" value="9.3" step="0.1"></div></div>
+      <div class="input-row"><label>Grid Connection <span class="unit">NZD k/yr</span></label>
+        <div class="input-control input-full"><input type="number" id="gridOpexN" value="50" step="5"></div></div>
+      <div class="input-row"><label>Land Rental <span class="unit">NZD k/yr</span></label>
+        <div class="input-control input-full"><input type="number" id="landN" value="25" step="5"></div></div>
+      <div class="input-row"><label>Site Electricity <span class="unit">NZD k/yr</span></label>
+        <div class="input-control input-full"><input type="number" id="siteElecN" value="10" step="2"></div></div>
+      <div class="input-row"><label>Market Operations <span class="unit">NZD k/yr</span></label>
+        <div class="input-control input-full"><input type="number" id="marketOpsFixedN" value="0" step="5"></div></div>
+      <div class="input-row"><label>OPEX Escalation <span class="unit">%/yr</span></label>
+        <div class="input-control"><input type="range" id="opexEsc" min="0" max="5" value="2.1" step="0.1"><input type="number" id="opexEscN" value="2.1" step="0.1"></div></div>
+    </div>
+  </details>
+
+  <details class="inp-accord">
+    <summary>Debt Structure</summary>
+    <div class="inp-accord-body">
+      <div class="input-sub-title">Senior Debt</div>
+      <div class="input-row"><label>Interest Rate <span class="unit">%</span></label>
+        <div class="input-control"><input type="range" id="debtRate" min="2" max="15" value="6.25" step="0.25"><input type="number" id="debtRateN" value="6.25" step="0.25"></div></div>
+      <div class="input-row"><label>Tenor <span class="unit">years</span></label>
+        <div class="input-control"><input type="range" id="debtTenor" min="5" max="25" value="15" step="1"><input type="number" id="debtTenorN" value="15" step="1"></div></div>
+      <div class="input-sub-title">Mezz 1</div>
+      <div class="input-row"><label>Gearing <span class="unit">%</span></label>
+        <div class="input-control"><input type="range" id="mezz1Gearing" min="0" max="40" value="0" step="1"><input type="number" id="mezz1GearingN" value="0" step="1"></div></div>
+      <div class="input-row"><label>Interest Rate <span class="unit">%</span></label>
+        <div class="input-control"><input type="range" id="mezz1Rate" min="2" max="20" value="6.8" step="0.1"><input type="number" id="mezz1RateN" value="6.8" step="0.1"></div></div>
+      <div class="input-row"><label>Tenor <span class="unit">years</span></label>
+        <div class="input-control"><input type="range" id="mezz1Tenor" min="1" max="25" value="6" step="1"><input type="number" id="mezz1TenorN" value="6" step="1"></div></div>
+      <div class="input-sub-title">Mezz 2</div>
+      <div class="input-row"><label>Gearing <span class="unit">%</span></label>
+        <div class="input-control"><input type="range" id="mezz2Gearing" min="0" max="40" value="0" step="1"><input type="number" id="mezz2GearingN" value="0" step="1"></div></div>
+      <div class="input-row"><label>Interest Rate <span class="unit">%</span></label>
+        <div class="input-control"><input type="range" id="mezz2Rate" min="2" max="20" value="3.0" step="0.1"><input type="number" id="mezz2RateN" value="3.0" step="0.1"></div></div>
+      <div class="input-row"><label>Tenor <span class="unit">years</span></label>
+        <div class="input-control"><input type="range" id="mezz2Tenor" min="1" max="25" value="15" step="1"><input type="number" id="mezz2TenorN" value="15" step="1"></div></div>
+      <div class="input-sub-title">Mezz 3</div>
+      <div class="input-row"><label>Gearing <span class="unit">%</span></label>
+        <div class="input-control"><input type="range" id="mezz3Gearing" min="0" max="40" value="0" step="1"><input type="number" id="mezz3GearingN" value="0" step="1"></div></div>
+      <div class="input-row"><label>Interest Rate <span class="unit">%</span></label>
+        <div class="input-control"><input type="range" id="mezz3Rate" min="2" max="20" value="3.0" step="0.1"><input type="number" id="mezz3RateN" value="3.0" step="0.1"></div></div>
+      <div class="input-row"><label>Tenor <span class="unit">years</span></label>
+        <div class="input-control"><input type="range" id="mezz3Tenor" min="1" max="25" value="15" step="1"><input type="number" id="mezz3TenorN" value="15" step="1"></div></div>
+    </div>
+  </details>
 
 </aside>
 
@@ -277,37 +410,42 @@ details.accord > summary .accord-tag { font-size: 0.65rem; font-weight: 400; col
     </div>
   </div>
 
-  <div class="kpi-grid">
-    <div class="kpi-tile" id="kpiProjectIRR">
-      <div class="kpi-label">Project IRR</div>
-      <div class="kpi-value" id="valProjectIRR">—</div>
-      <div class="kpi-sub">Pre-tax, unlevered</div>
-    </div>
-    <div class="kpi-tile" id="kpiEquityIRR">
-      <div class="kpi-label">Equity IRR</div>
-      <div class="kpi-value" id="valEquityIRR">—</div>
-      <div class="kpi-sub">Post-financing, post-tax</div>
-    </div>
-    <div class="kpi-tile" id="kpiNPV">
-      <div class="kpi-label">Project NPV</div>
-      <div class="kpi-value" id="valNPV">—</div>
-      <div class="kpi-sub">At equity WACC</div>
-    </div>
-    <div class="kpi-tile" id="kpiDSCR">
-      <div class="kpi-label">Min DSCR</div>
-      <div class="kpi-value" id="valDSCR">—</div>
-      <div class="kpi-sub">Debt service cover</div>
-    </div>
-    <div class="kpi-tile">
-      <div class="kpi-label">LCOE (real)</div>
-      <div class="kpi-value" id="valLCOE">—</div>
-      <div class="kpi-sub">NZD/MWh</div>
+  <div id="kpiSentinel"></div>
+  <div id="kpiBar">
+    <div class="kpi-grid">
+      <div class="kpi-tile" id="kpiProjectIRR">
+        <div class="kpi-label">Project IRR</div>
+        <div class="kpi-value" id="valProjectIRR">—</div>
+        <div class="kpi-sub">Pre-tax, unlevered</div>
+      </div>
+      <div class="kpi-tile" id="kpiEquityIRR">
+        <div class="kpi-label">Equity IRR</div>
+        <div class="kpi-value" id="valEquityIRR">—</div>
+        <div class="kpi-sub">Post-financing, post-tax</div>
+      </div>
+      <div class="kpi-tile" id="kpiNPV">
+        <div class="kpi-label">Project NPV</div>
+        <div class="kpi-value" id="valNPV">—</div>
+        <div class="kpi-sub">At equity WACC</div>
+      </div>
+      <div class="kpi-tile" id="kpiDSCR">
+        <div class="kpi-label">Min DSCR</div>
+        <div class="kpi-value" id="valDSCR">—</div>
+        <div class="kpi-sub">Debt service cover</div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-label">LCOE (real)</div>
+        <div class="kpi-value" id="valLCOE">—</div>
+        <div class="kpi-sub">NZD/MWh</div>
+      </div>
     </div>
   </div>
 
-  <div class="chart-wrap">
-    <div class="section-title">Annual cashflows — NZD millions</div>
-    <canvas id="cashflowChart"></canvas>
+  <div class="charts-row">
+    <div class="chart-wrap">
+      <div class="section-title">Pre-tax unlevered — NZD $000s/yr</div>
+      <canvas id="chartUnlevered"></canvas>
+    </div>
   </div>
 
   <div class="summary-wrap">
@@ -325,47 +463,64 @@ details.accord > summary .accord-tag { font-size: 0.65rem; font-weight: 400; col
     <div class="detail-heading" style="margin-bottom:0.75rem">Full annual detail — all years (NZD k unless stated)</div>
 
     <details class="accord" id="acc-tech">
-      <summary>Technical <span class="accord-tag">generation · state of health · battery</span></summary>
+      <summary><span class="accord-title">Technical</span><span class="accord-tag">generation · state of health · battery</span><button class="accord-chart-btn" data-tbl="dt-tech" title="Chart all rows"><svg width="13" height="11" viewBox="0 0 13 11" fill="currentColor" style="display:block"><rect x="0" y="5" width="3" height="6" rx="0.5"/><rect x="5" y="2" width="3" height="9" rx="0.5"/><rect x="10" y="0" width="3" height="11" rx="0.5"/></svg></button></summary>
       <div class="table-scroll"><table class="detail-table" id="dt-tech"></table></div>
     </details>
 
     <details class="accord" id="acc-rev">
-      <summary>Revenue <span class="accord-tag">PPA · wholesale · ancillary · total</span></summary>
+      <summary><span class="accord-title">Revenue</span><span class="accord-tag">retail · PPA · wholesale · ancillary · total</span><button class="accord-chart-btn" data-tbl="dt-rev" title="Chart all rows"><svg width="13" height="11" viewBox="0 0 13 11" fill="currentColor" style="display:block"><rect x="0" y="5" width="3" height="6" rx="0.5"/><rect x="5" y="2" width="3" height="9" rx="0.5"/><rect x="10" y="0" width="3" height="11" rx="0.5"/></svg></button></summary>
       <div class="table-scroll"><table class="detail-table" id="dt-rev"></table></div>
     </details>
 
     <details class="accord" id="acc-opex">
-      <summary>Operating Costs <span class="accord-tag">O&amp;M · insurance · grid · land · site</span></summary>
+      <summary><span class="accord-title">Operating Costs</span><span class="accord-tag">O&amp;M · insurance · grid · land · site · market ops</span><button class="accord-chart-btn" data-tbl="dt-opex" title="Chart all rows"><svg width="13" height="11" viewBox="0 0 13 11" fill="currentColor" style="display:block"><rect x="0" y="5" width="3" height="6" rx="0.5"/><rect x="5" y="2" width="3" height="9" rx="0.5"/><rect x="10" y="0" width="3" height="11" rx="0.5"/></svg></button></summary>
       <div class="table-scroll"><table class="detail-table" id="dt-opex"></table></div>
     </details>
 
     <details class="accord" id="acc-ucf">
-      <summary>Cashflow — Pre-Tax Unlevered <span class="accord-tag">capex · EBITDA · net CF</span></summary>
+      <summary><span class="accord-title">Cashflow — Pre-Tax Unlevered</span><span class="accord-tag">capex · EBITDA · net CF</span><button class="accord-chart-btn" data-tbl="dt-ucf" title="Chart all rows"><svg width="13" height="11" viewBox="0 0 13 11" fill="currentColor" style="display:block"><rect x="0" y="5" width="3" height="6" rx="0.5"/><rect x="5" y="2" width="3" height="9" rx="0.5"/><rect x="10" y="0" width="3" height="11" rx="0.5"/></svg></button></summary>
       <div class="table-scroll"><table class="detail-table" id="dt-ucf"></table></div>
     </details>
 
+    <div class="chart-wrap" style="margin-bottom:0.6rem">
+      <div class="section-title">Post-tax levered — NZD $000s/yr</div>
+      <canvas id="chartLevered"></canvas>
+    </div>
+
     <details class="accord" id="acc-lcf">
-      <summary>Cashflow — Post-Tax Levered <span class="accord-tag">equity · tax · debt · net CF</span></summary>
+      <summary><span class="accord-title">Cashflow — Post-Tax Levered</span><span class="accord-tag">equity · tax · debt · net CF</span><button class="accord-chart-btn" data-tbl="dt-lcf" title="Chart all rows"><svg width="13" height="11" viewBox="0 0 13 11" fill="currentColor" style="display:block"><rect x="0" y="5" width="3" height="6" rx="0.5"/><rect x="5" y="2" width="3" height="9" rx="0.5"/><rect x="10" y="0" width="3" height="11" rx="0.5"/></svg></button></summary>
       <div class="table-scroll"><table class="detail-table" id="dt-lcf"></table></div>
     </details>
 
     <details class="accord" id="acc-debt">
-      <summary>Debt Schedule <span class="accord-tag">opening · interest · repayment · closing · DSCR</span></summary>
+      <summary><span class="accord-title">Debt Schedule</span><span class="accord-tag">opening · interest · repayment · closing · DSCR</span><button class="accord-chart-btn" data-tbl="dt-debt" title="Chart all rows"><svg width="13" height="11" viewBox="0 0 13 11" fill="currentColor" style="display:block"><rect x="0" y="5" width="3" height="6" rx="0.5"/><rect x="5" y="2" width="3" height="9" rx="0.5"/><rect x="10" y="0" width="3" height="11" rx="0.5"/></svg></button></summary>
       <div class="table-scroll"><table class="detail-table" id="dt-debt"></table></div>
     </details>
 
     <details class="accord" id="acc-pl">
-      <summary>P&amp;L <span class="accord-tag">EBITDA · depreciation · EBIT · interest · NPBT · tax · NPAT</span></summary>
+      <summary><span class="accord-title">P&amp;L</span><span class="accord-tag">EBITDA · depreciation · EBIT · interest · NPBT · tax · NPAT</span><button class="accord-chart-btn" data-tbl="dt-pl" title="Chart all rows"><svg width="13" height="11" viewBox="0 0 13 11" fill="currentColor" style="display:block"><rect x="0" y="5" width="3" height="6" rx="0.5"/><rect x="5" y="2" width="3" height="9" rx="0.5"/><rect x="10" y="0" width="3" height="11" rx="0.5"/></svg></button></summary>
       <div class="table-scroll"><table class="detail-table" id="dt-pl"></table></div>
     </details>
 
     <details class="accord" id="acc-tax">
-      <summary>Tax <span class="accord-tag">losses carried forward · taxable income · cash tax paid</span></summary>
+      <summary><span class="accord-title">Tax</span><span class="accord-tag">losses carried forward · taxable income · cash tax paid</span><button class="accord-chart-btn" data-tbl="dt-tax" title="Chart all rows"><svg width="13" height="11" viewBox="0 0 13 11" fill="currentColor" style="display:block"><rect x="0" y="5" width="3" height="6" rx="0.5"/><rect x="5" y="2" width="3" height="9" rx="0.5"/><rect x="10" y="0" width="3" height="11" rx="0.5"/></svg></button></summary>
       <div class="table-scroll"><table class="detail-table" id="dt-tax"></table></div>
     </details>
   </div>
 
 </main>
+</div>
+
+<div id="rowPanel">
+  <div class="rp-hd">
+    <div id="rpLegend"></div>
+    <div class="rp-actions">
+      <button class="rp-close" id="rpClose">✕</button>
+    </div>
+  </div>
+  <div class="rp-body">
+    <canvas id="rpCanvas"></canvas>
+  </div>
 </div>
 
 <script>
@@ -406,38 +561,58 @@ function fRatio(v,dp=2){return isFinite(v)?v.toFixed(dp)+'x':'—';}
 function fM(v){if(!isFinite(v))return'—';return(Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M':(v/1e3).toFixed(0)+'k');}
 function cls(v){return v>0?'v-pos':v<0?'v-neg':'v-zero';}
 
+// ── Debt annuity helper ──
+function dsAnnuity(p,r,t){return p>0&&r>0&&t>0?p*r*Math.pow(1+r,t)/(Math.pow(1+r,t)-1):0;}
+
 // ── Main calculate ──
 function calculate(){
   const g=id=>parseFloat(document.getElementById(id).value);
   const pv_mwp=g('pvSize'), yield_kwp=g('pvYield'), pv_wp=g('pvCost');
+  const sys_avail=g('systemAvailN')/100;
   const deg=g('degradation')/100, life=Math.round(g('projectLife'));
   const inv_yr=Math.round(g('invReplYear'));
   const batt_mw=g('battMW'), batt_mwh=g('battMWh'), batt_nzd_kwh=g('battCost');
   const scenario=document.getElementById('priceScenario').value;
   const customP=g('customPriceN');
+  const retail_frac=g('retailFractionN')/100, retail_yr1_price=g('retailPriceN');
+  const retail_dur=Math.round(g('retailDurationN'));
   const ppa_frac=g('ppaFraction')/100, ppa_yr1=g('ppaPrice');
+  const ppa_dur=Math.round(g('ppaDurationN'));
   const fir_rate=g('firRateN'), sir_rate=g('sirRateN');
   const cpi=g('cpi')/100;
   const grid_capex=g('gridCapexN')*1e3, dev_fee=g('devFeeN')*1e3;
   const om_k_mwp=g('omCost'), ins_k_mwp=g('insurance');
   const grid_opex_k=g('gridOpexN'), land_k=g('landN'), site_k=g('siteElecN');
+  const mkt_ops_k=g('marketOpsFixedN');
   const opex_esc=g('opexEsc')/100;
-  const gearing=g('gearing')/100, dr=g('debtRate')/100;
-  const tenor=Math.round(g('debtTenor')), wacc=g('wacc')/100;
+  const senior_g=g('gearing')/100, dr=g('debtRate')/100;
+  const tenor=Math.round(g('debtTenor'));
+  const mezz1_g=g('mezz1GearingN')/100, mezz1_r=g('mezz1RateN')/100, mezz1_t=Math.round(g('mezz1TenorN'));
+  const mezz2_g=g('mezz2GearingN')/100, mezz2_r=g('mezz2RateN')/100, mezz2_t=Math.round(g('mezz2TenorN'));
+  const mezz3_g=g('mezz3GearingN')/100, mezz3_r=g('mezz3RateN')/100, mezz3_t=Math.round(g('mezz3TenorN'));
+  const wacc=g('wacc')/100;
   const tax_rate=g('taxRate')/100;
 
   // ── Capex ──
   const pv_capex=pv_mwp*1e6*pv_wp, batt_capex=batt_mwh*1e3*batt_nzd_kwh;
   const total_capex=pv_capex+batt_capex+grid_capex+dev_fee;
-  const debt=total_capex*gearing, equity_inv=total_capex-debt;
+  const senior_debt=total_capex*senior_g;
+  const mezz1_debt=total_capex*mezz1_g;
+  const mezz2_debt=total_capex*mezz2_g;
+  const mezz3_debt=total_capex*mezz3_g;
+  const total_debt=senior_debt+mezz1_debt+mezz2_debt+mezz3_debt;
+  const equity_inv=total_capex-total_debt;
   // Inverter replacement cost (~3.5% of PV EPC)
   const inv_cost=pv_capex*0.035;
   // Battery replacement at year 10 if battery present
   const batt_repl_yr=batt_mwh>0?10:Infinity;
   const batt_repl_cost=batt_mwh>0?batt_capex:0;
 
-  // Debt service (annuity)
-  const ds=debt>0&&dr>0?debt*dr*Math.pow(1+dr,tenor)/(Math.pow(1+dr,tenor)-1):0;
+  // Debt service per tranche (annuity)
+  const ds_senior=dsAnnuity(senior_debt,dr,tenor);
+  const ds_mezz1=dsAnnuity(mezz1_debt,mezz1_r,mezz1_t);
+  const ds_mezz2=dsAnnuity(mezz2_debt,mezz2_r,mezz2_t);
+  const ds_mezz3=dsAnnuity(mezz3_debt,mezz3_r,mezz3_t);
 
   // Depreciation base (PV + battery, straight-line 10yr; inverters 10yr from yr1 and inv_yr)
   const depr_life=10;
@@ -451,21 +626,30 @@ function calculate(){
   document.getElementById('capexGrid').textContent=fM(grid_capex);
   document.getElementById('capexDev').textContent=fM(dev_fee);
   document.getElementById('capexTotal').textContent=fM(total_capex);
+  document.getElementById('capexDebt').textContent=fM(total_debt);
+  document.getElementById('capexEquity').textContent=fM(equity_inv);
 
   // ── Annual arrays ──
   const proj_cf=[-total_capex], eq_cf=[-equity_inv];
   // Technical
   const pvGen=[], pvSoH=[], battUsable=[], battSoH=[], battRepl=[];
   // Revenue
-  const revPPA=[], revWholesale=[], revFIR=[], revSIR=[], revTotal=[];
+  const revRetail=[], retailPriceArr=[], revRetailMWh=[];
+  const revPPA=[], ppaPriceArr=[], revPPAMWh=[];
+  const revWholesale=[], wholesalePriceArr=[], revWSMWh=[];
+  const revFIR=[], revSIR=[], revTotal=[];
   // Opex lines
-  const opOM=[], opIns=[], opGrid=[], opLand=[], opSite=[], opTotal=[];
+  const opOM=[], opIns=[], opGrid=[], opLand=[], opSite=[], opMktOps=[], opTotal=[];
   // Capex annual (replacements)
   const annCapex=[];
   // Cashflow unlevered
   const ebitdaArr=[], netUCF=[];
-  // Debt
-  let openDebt=debt;
+  // Debt — per tranche + totals
+  let openSenior=senior_debt, openMezz1=mezz1_debt, openMezz2=mezz2_debt, openMezz3=mezz3_debt;
+  const snrOpen=[], snrInt=[], snrRepl=[], snrClose=[];
+  const m1Open=[], m1Int=[], m1Repl=[], m1Close=[];
+  const m2Open=[], m2Int=[], m2Repl=[], m2Close=[];
+  const m3Open=[], m3Int=[], m3Repl=[], m3Close=[];
   const debtOpen=[], debtInt=[], debtRepl=[], debtClose=[], dscrArr=[];
   // P&L
   const depArr=[], ebitArr=[], intExpArr=[], npbtArr=[], taxPLArr=[], npatArr=[];
@@ -481,7 +665,7 @@ function calculate(){
 
   for(let t=1;t<=life;t++){
     // Technical
-    const gen=pv_mwp*yield_kwp*Math.pow(1-deg,t-1);
+    const gen=pv_mwp*yield_kwp*sys_avail*Math.pow(1-deg,t-1);
     pvGen.push(gen);
     pvSoH.push(1-deg*t);
     const bRepl=t===batt_repl_yr;
@@ -497,15 +681,25 @@ function calculate(){
     else if(scenario==='80cpi') wp=80*Math.pow(1+cpi,t-1);
     else if(scenario==='100cpi') wp=100*Math.pow(1+cpi,t-1);
     else wp=customP*Math.pow(1+cpi,t-1);
+    const in_retail_period=t<=retail_dur;
+    const in_ppa_period=t<=ppa_dur;
+    const eff_retail=in_retail_period?retail_frac:0;
+    const eff_ppa=in_ppa_period?ppa_frac:0;
+    const eff_ws=Math.max(0,1-eff_retail-eff_ppa);
+    const retail_p=retail_yr1_price*Math.pow(1+cpi,t-1);
     const ppa_p=ppa_yr1*Math.pow(1+cpi,t-1);
 
     // Revenue (NZD)
-    const rPPA=gen*ppa_frac*ppa_p;
-    const rWS=gen*(1-ppa_frac)*wp;
+    const rRetail=gen*eff_retail*retail_p;
+    const rPPA=gen*eff_ppa*ppa_p;
+    const rWS=gen*eff_ws*wp;
     const rFIR=batt_mw>0?batt_mw*fir_rate*Math.pow(1+cpi,t-1):0;
     const rSIR=batt_mw>0?batt_mw*sir_rate*Math.pow(1+cpi,t-1):0;
-    const rTot=rPPA+rWS+rFIR+rSIR;
-    revPPA.push(rPPA/1e3); revWholesale.push(rWS/1e3); revFIR.push(rFIR/1e3); revSIR.push(rSIR/1e3); revTotal.push(rTot/1e3);
+    const rTot=rRetail+rPPA+rWS+rFIR+rSIR;
+    revRetail.push(rRetail/1e3); retailPriceArr.push(in_retail_period?retail_p:null); revRetailMWh.push(gen*eff_retail);
+    revPPA.push(rPPA/1e3); ppaPriceArr.push(in_ppa_period?ppa_p:null); revPPAMWh.push(gen*eff_ppa);
+    revWholesale.push(rWS/1e3); wholesalePriceArr.push(wp); revWSMWh.push(gen*eff_ws);
+    revFIR.push(rFIR/1e3); revSIR.push(rSIR/1e3); revTotal.push(rTot/1e3);
 
     // Opex (NZD)
     const esc=Math.pow(1+opex_esc,t-1);
@@ -514,8 +708,9 @@ function calculate(){
     const oGrid=grid_opex_k*1e3*esc;
     const oLand=land_k*1e3*esc;
     const oSite=site_k*1e3*esc;
-    const oTot=oOM+oIns+oGrid+oLand+oSite;
-    opOM.push(oOM/1e3); opIns.push(oIns/1e3); opGrid.push(oGrid/1e3); opLand.push(oLand/1e3); opSite.push(oSite/1e3); opTotal.push(oTot/1e3);
+    const oMktOps_v=mkt_ops_k*1e3*esc;
+    const oTot=oOM+oIns+oGrid+oLand+oSite+oMktOps_v;
+    opOM.push(oOM/1e3); opIns.push(oIns/1e3); opGrid.push(oGrid/1e3); opLand.push(oLand/1e3); opSite.push(oSite/1e3); opMktOps.push(oMktOps_v/1e3); opTotal.push(oTot/1e3);
 
     // EBITDA (NZD)
     const ebitda=rTot-oTot;
@@ -538,17 +733,32 @@ function calculate(){
     if(t>=inv_yr&&t<inv_yr+depr_life) depr+=depr_inv2;
     depArr.push(-depr/1e3);
 
-    // Debt schedule NZDk
-    const intChg=openDebt*dr;
-    const repl=t<=tenor?Math.min(ds-intChg,openDebt):0;
-    const closeDebt=Math.max(0,openDebt-repl);
-    debtOpen.push(openDebt/1e3);
-    debtInt.push(-intChg/1e3);
-    debtRepl.push(-repl/1e3);
-    debtClose.push(closeDebt/1e3);
-    const dscr_v=t<=tenor&&ds>0?ebitda/ds:null;
+    // Debt schedule NZDk — per tranche
+    const si=openSenior*dr, sr=t<=tenor?Math.min(ds_senior-si,openSenior):0, sc=Math.max(0,openSenior-sr);
+    snrOpen.push(openSenior/1e3); snrInt.push(-si/1e3); snrRepl.push(-sr/1e3); snrClose.push(sc/1e3);
+    openSenior=sc;
+
+    const m1i=openMezz1*mezz1_r, m1r=t<=mezz1_t?Math.min(ds_mezz1-m1i,openMezz1):0, m1c=Math.max(0,openMezz1-m1r);
+    m1Open.push(openMezz1/1e3); m1Int.push(-m1i/1e3); m1Repl.push(-m1r/1e3); m1Close.push(m1c/1e3);
+    openMezz1=m1c;
+
+    const m2i=openMezz2*mezz2_r, m2r=t<=mezz2_t?Math.min(ds_mezz2-m2i,openMezz2):0, m2c=Math.max(0,openMezz2-m2r);
+    m2Open.push(openMezz2/1e3); m2Int.push(-m2i/1e3); m2Repl.push(-m2r/1e3); m2Close.push(m2c/1e3);
+    openMezz2=m2c;
+
+    const m3i=openMezz3*mezz3_r, m3r=t<=mezz3_t?Math.min(ds_mezz3-m3i,openMezz3):0, m3c=Math.max(0,openMezz3-m3r);
+    m3Open.push(openMezz3/1e3); m3Int.push(-m3i/1e3); m3Repl.push(-m3r/1e3); m3Close.push(m3c/1e3);
+    openMezz3=m3c;
+
+    const totIntChg=si+m1i+m2i+m3i, totRepl=sr+m1r+m2r+m3r;
+    const totClose=sc+m1c+m2c+m3c, totOpen=openSenior+sr+openMezz1+m1r+openMezz2+m2r+openMezz3+m3r;
+    debtOpen.push(totOpen/1e3);
+    debtInt.push(-totIntChg/1e3);
+    debtRepl.push(-totRepl/1e3);
+    debtClose.push(totClose/1e3);
+    const totDS=totIntChg+totRepl;
+    const dscr_v=totDS>0?ebitda/totDS:null;
     dscrArr.push(dscr_v);
-    openDebt=closeDebt;
 
     // P&L NZDk
     const ebit=(ebitda+depr*(-1)*(-1e3)-depr*(-1e3))/1e3; // EBITDA + dep (dep is negative)
@@ -576,10 +786,10 @@ function calculate(){
     npatArr.push(npbt-ctax);
 
     // Levered cashflow NZDk
-    const lcf=ebitda/1e3-repl/1e3-intChg/1e3-ctax-ac/1e3;
+    const lcf=ebitda/1e3-totRepl/1e3-totIntChg/1e3-ctax-ac/1e3;
     cashTaxPaid.push(-ctax);
     netLCF.push(lcf);
-    eq_cf.push((lcf)*1e3);
+    eq_cf.push(lcf*1e3);
   }
 
   // ── KPIs ──
@@ -598,11 +808,10 @@ function calculate(){
   document.getElementById('valLCOE').textContent=isFinite(lcoe)?lcoe.toFixed(1):'—';
 
   // ── Scenario heroes ──
-  const retail_yr1=parseFloat(document.getElementById('retailPriceN').value)||175;
   function heroIRR(priceFn){
     const cfs=[-total_capex];
     for(let t=1;t<=life;t++){
-      const gen=pv_mwp*yield_kwp*Math.pow(1-deg,t-1);
+      const gen=pv_mwp*yield_kwp*sys_avail*Math.pow(1-deg,t-1);
       const ppa_p=ppa_yr1*Math.pow(1+cpi,t-1);
       let wp;
       if(scenario==='gwap') wp=t<=GWAP.length?GWAP[t-1]:GWAP[GWAP.length-1]*Math.pow(1.0065,t-GWAP.length);
@@ -612,7 +821,7 @@ function calculate(){
       let rev=gen*priceFn(t,ppa_p,wp);
       if(batt_mw>0) rev+=(fir_rate+sir_rate)*batt_mw*Math.pow(1+cpi,t-1);
       const esc=Math.pow(1+opex_esc,t-1);
-      const opex=(om_k_mwp*pv_mwp+ins_k_mwp*pv_mwp+grid_opex_k+land_k+site_k)*1e3*esc;
+      const opex=(om_k_mwp*pv_mwp+ins_k_mwp*pv_mwp+grid_opex_k+land_k+site_k+mkt_ops_k)*1e3*esc;
       let repl=0;if(t===inv_yr)repl+=inv_cost;if(t===batt_repl_yr)repl+=batt_repl_cost;
       cfs.push(rev-opex-repl);
     }
@@ -620,47 +829,57 @@ function calculate(){
   }
   const irrWS =heroIRR((_t,_p,w)=>w);
   const irrPPA=heroIRR((_t,p,_w)=>p);
-  const irrBL =heroIRR((_t,p,w)=>ppa_frac*p+(1-ppa_frac)*w);
-  const irrRT =heroIRR((t,_p,_w)=>retail_yr1*Math.pow(1+cpi,t-1));
+  const irrBL =heroIRR((t,p,w)=>{
+    const in_r=t<=retail_dur,in_p=t<=ppa_dur;
+    const fr=in_r?retail_frac:0,fp=in_p?ppa_frac:0,fw=Math.max(0,1-fr-fp);
+    return fr*(retail_yr1_price*Math.pow(1+cpi,t-1))+fp*p+fw*w;
+  });
+  const irrRT =heroIRR((t,_p,w)=>t<=retail_dur?retail_yr1_price*Math.pow(1+cpi,t-1):w);
   const scLabel={'gwap':'NZ GWAP forecast','80cpi':'$80/MWh + CPI','100cpi':'$100/MWh + CPI','custom':`$${customP}/MWh + CPI`}[scenario]||'';
+  const blFr=Math.round(retail_frac*100),blFp=Math.round(ppa_frac*100),blFw=Math.round(Math.max(0,1-retail_frac-ppa_frac)*100);
   document.getElementById('hdescWS').textContent=`100% spot · ${scLabel}`;
   document.getElementById('hdescPPA').textContent=`100% contracted · NZD ${ppa_yr1}/MWh yr1 + ${(cpi*100).toFixed(1)}% CPI`;
-  document.getElementById('hdescBL').textContent=`${Math.round(ppa_frac*100)}% PPA + ${Math.round((1-ppa_frac)*100)}% spot · current split`;
-  document.getElementById('hdescRT').textContent=`100% direct to load · NZD ${retail_yr1}/MWh yr1 + ${(cpi*100).toFixed(1)}% CPI`;
+  document.getElementById('hdescBL').textContent=`${blFr>0?blFr+'% retail + ':''}${blFp>0?blFp+'% PPA + ':''}${blFw}% spot (current split)`;
+  document.getElementById('hdescRT').textContent=`100% direct to load · NZD ${retail_yr1_price}/MWh yr1 + ${(cpi*100).toFixed(1)}% CPI`;
   setHero('heroWS','hirrWS',irrWS,wacc);
   setHero('heroPPA','hirrPPA',irrPPA,wacc);
   setHero('heroBL','hirrBL',irrBL,wacc);
   setHero('heroRT','hirrRT',irrRT,wacc);
 
-  // ── Chart ──
-  updateChart(revTotal,opTotal,dscrArr.map((_,i)=>i<tenor&&ds>0?ds/1e3:0),netLCF,life);
+  // ── Charts ──
+  updateCharts(revTotal,opTotal,annCapex,debtInt,debtRepl,cashTax,netUCF,netLCF,life);
 
   // ── Summary table ──
   const snapYrs=[1,5,10,15,20,25,30].filter(y=>y<=life);
   const thead=document.getElementById('summaryHead');
   thead.innerHTML='<th>Metric (NZD k)</th>'+snapYrs.map(y=>`<th>Yr ${y}</th>`).join('');
   const rows=[
-    {l:'PV Generation (MWh)',v:snapYrs.map(y=>pvGen[y-1].toFixed(0)),plain:true},
-    {l:'Total Revenue',v:snapYrs.map(y=>fK(revTotal[y-1])),pos:true},
-    {l:'  — PPA',v:snapYrs.map(y=>fK(revPPA[y-1])),sub:true},
-    {l:'  — Wholesale',v:snapYrs.map(y=>fK(revWholesale[y-1])),sub:true},
-    {l:'Total OPEX',v:snapYrs.map(y=>fK(-opTotal[y-1])),neg:true},
-    {l:'EBITDA',v:snapYrs.map(y=>fK(ebitdaArr[y-1])),total:true},
-    {l:'Depreciation',v:snapYrs.map(y=>fK(depArr[y-1])),neg:true},
-    {l:'EBIT',v:snapYrs.map(y=>fK(ebitArr[y-1])),total:true},
-    {l:'Interest Expense',v:snapYrs.map(y=>fK(debtInt[y-1])),neg:true},
-    {l:'NPBT',v:snapYrs.map(y=>fK(npbtArr[y-1])),total:true},
-    {l:'Cash Tax Paid',v:snapYrs.map(y=>fK(-cashTax[y-1])),neg:true},
-    {l:'Net CF — Levered',v:snapYrs.map(y=>fK(netLCF[y-1])),total:true},
-    {l:'DSCR',v:snapYrs.map(y=>dscrArr[y-1]!=null?fRatio(dscrArr[y-1]):'—'),plain:true},
-    {l:'Closing Debt',v:snapYrs.map(y=>fK(debtClose[y-1])),neg:true},
+    {l:'PV Generation (MWh)', unit:'MWh',  vals:pvGen,                       v:snapYrs.map(y=>pvGen[y-1].toFixed(0)),       plain:true},
+    {l:'Total Revenue',       unit:'NZDk', vals:revTotal,                    v:snapYrs.map(y=>fK(revTotal[y-1])),           pos:true},
+    {l:'— Retail',            unit:'NZDk', vals:revRetail,                   v:snapYrs.map(y=>fK(revRetail[y-1])),           sub:true},
+    {l:'— PPA',               unit:'NZDk', vals:revPPA,                      v:snapYrs.map(y=>fK(revPPA[y-1])),             sub:true},
+    {l:'— Wholesale',         unit:'NZDk', vals:revWholesale,                v:snapYrs.map(y=>fK(revWholesale[y-1])),       sub:true},
+    {l:'Total OPEX',          unit:'NZDk', vals:opTotal.map(v=>-v),          v:snapYrs.map(y=>fK(-opTotal[y-1])),           neg:true},
+    {l:'EBITDA',              unit:'NZDk', vals:ebitdaArr,                   v:snapYrs.map(y=>fK(ebitdaArr[y-1])),          total:true},
+    {l:'Depreciation',        unit:'NZDk', vals:depArr,                      v:snapYrs.map(y=>fK(depArr[y-1])),             neg:true},
+    {l:'EBIT',                unit:'NZDk', vals:ebitArr,                     v:snapYrs.map(y=>fK(ebitArr[y-1])),            total:true},
+    {l:'Interest Expense',    unit:'NZDk', vals:debtInt,                     v:snapYrs.map(y=>fK(debtInt[y-1])),            neg:true},
+    {l:'NPBT',                unit:'NZDk', vals:npbtArr,                     v:snapYrs.map(y=>fK(npbtArr[y-1])),            total:true},
+    {l:'Cash Tax Paid',       unit:'NZDk', vals:cashTax.map(v=>-v),          v:snapYrs.map(y=>fK(-cashTax[y-1])),           neg:true},
+    {l:'Net CF — Levered',    unit:'NZDk', vals:netLCF,                      v:snapYrs.map(y=>fK(netLCF[y-1])),             total:true},
+    {l:'DSCR',                unit:'x',    vals:dscrArr,                     v:snapYrs.map(y=>dscrArr[y-1]!=null?fRatio(dscrArr[y-1]):'—'), plain:true},
+    {l:'Closing Debt',        unit:'NZDk', vals:debtClose,                   v:snapYrs.map(y=>fK(debtClose[y-1])),          neg:true},
   ];
-  document.getElementById('summaryBody').innerHTML=rows.map(r=>
-    `<tr class="${r.total?'total':''}"><td>${r.l}</td>${r.v.map(v=>`<td class="${r.neg?'neg':r.pos?'pos':''}">${v}</td>`).join('')}</tr>`
-  ).join('');
-
   // ── Detail accordions ──
   const yrs=Array.from({length:life},(_,i)=>i+1);
+
+  const summaryTbl = document.querySelector('.summary-table');
+  summaryTbl.dataset.years = yrs.join(',');
+  document.getElementById('summaryBody').innerHTML=rows.map(r=>{
+    const labelSafe=r.l.replace(/"/g,'&quot;');
+    const valsSafe=encodeURIComponent(JSON.stringify(r.vals||[]));
+    return `<tr class="${r.total?'total':''} cr" data-label="${labelSafe}" data-unit="${r.unit||''}" data-vals="${valsSafe}"><td>${r.l}</td>${r.v.map(v=>`<td class="${r.neg?'neg':r.pos?'pos':''}">${v}</td>`).join('')}</tr>`;
+  }).join('');
 
   // Technical
   renderTable('dt-tech',[
@@ -673,16 +892,15 @@ function calculate(){
 
   // Revenue
   renderTable('dt-rev',[
-    {l:'Sell Price — PPA',unit:'NZD/MWh',v:Array.from({length:life},(_,i)=>ppa_yr1*Math.pow(1+cpi,i)),fmt:(v)=>v.toFixed(1),cls:()=>''  },
-    {l:'PPA Fraction',unit:'%',v:Array.from({length:life},()=>ppa_frac*100),fmt:(v)=>v.toFixed(0)+'%',cls:()=>''  },
-    {l:'Electricity Sales — PPA',unit:'MWh',v:pvGen.map(g=>g*ppa_frac),fmt:(v)=>v.toFixed(0),cls:()=>''  },
-    {l:'PPA Revenue',unit:'NZDk',v:revPPA,fmt:fK,cls:cls,sub:true},
-    {l:'Sell Price — Wholesale',unit:'NZD/MWh',v:Array.from({length:life},(_,i)=>{
-      let w;if(scenario==='gwap')w=i<GWAP.length?GWAP[i]:GWAP[GWAP.length-1]*Math.pow(1.0065,i-GWAP.length+1);
-      else if(scenario==='80cpi')w=80*Math.pow(1+cpi,i);else if(scenario==='100cpi')w=100*Math.pow(1+cpi,i);else w=customP*Math.pow(1+cpi,i);
-      return w;}),fmt:(v)=>v.toFixed(1),cls:()=>''  },
-    {l:'Electricity Sales — Wholesale',unit:'MWh',v:pvGen.map(g=>g*(1-ppa_frac)),fmt:(v)=>v.toFixed(0),cls:()=>''  },
-    {l:'Wholesale Market Revenue',unit:'NZDk',v:revWholesale,fmt:fK,cls:cls,sub:true},
+    {l:'— Sell Price — Retail',unit:'NZD/MWh',v:retailPriceArr,fmt:(v)=>v!=null?v.toFixed(1):'—',cls:()=>'',sub:true},
+    {l:'— Electricity Sales — Retail',unit:'MWh',v:revRetailMWh,fmt:(v)=>v>0?v.toFixed(0):'—',cls:()=>'',sub:true},
+    {l:'Local Retail Revenue',unit:'NZDk',v:revRetail,fmt:fK,cls:cls,subtotal:true},
+    {l:'— Sell Price — PPA',unit:'NZD/MWh',v:ppaPriceArr,fmt:(v)=>v!=null?v.toFixed(1):'—',cls:()=>'',sub:true},
+    {l:'— Electricity Sales — PPA',unit:'MWh',v:revPPAMWh,fmt:(v)=>v>0?v.toFixed(0):'—',cls:()=>'',sub:true},
+    {l:'PPA Revenue',unit:'NZDk',v:revPPA,fmt:fK,cls:cls,subtotal:true},
+    {l:'— Sell Price — Wholesale',unit:'NZD/MWh',v:wholesalePriceArr,fmt:(v)=>v.toFixed(1),cls:()=>'',sub:true},
+    {l:'— Electricity Sales — Wholesale',unit:'MWh',v:revWSMWh,fmt:(v)=>v.toFixed(0),cls:()=>'',sub:true},
+    {l:'Wholesale Market Revenue',unit:'NZDk',v:revWholesale,fmt:fK,cls:cls,subtotal:true},
     {l:'FIR Revenue',unit:'NZDk',v:revFIR,fmt:(v)=>batt_mw>0?fK(v):'—',cls:cls,sub:true},
     {l:'SIR Revenue',unit:'NZDk',v:revSIR,fmt:(v)=>batt_mw>0?fK(v):'—',cls:cls,sub:true},
     {l:'Total Revenue',unit:'NZDk',v:revTotal,fmt:fK,cls:cls,total:true},
@@ -695,6 +913,7 @@ function calculate(){
     {l:'Grid Connection',unit:'NZDk',v:opGrid,fmt:(v)=>fK(-v),cls:(v)=>cls(-v)},
     {l:'Land Rental',unit:'NZDk',v:opLand,fmt:(v)=>fK(-v),cls:(v)=>cls(-v)},
     {l:'Site Electricity',unit:'NZDk',v:opSite,fmt:(v)=>fK(-v),cls:(v)=>cls(-v)},
+    {l:'Market Operations',unit:'NZDk',v:opMktOps,fmt:(v)=>fK(-v),cls:(v)=>cls(-v)},
     {l:'Total Operating Costs',unit:'NZDk',v:opTotal,fmt:(v)=>fK(-v),cls:(v)=>cls(-v),total:true},
   ],yrs);
 
@@ -719,14 +938,47 @@ function calculate(){
     {l:'Cash Yield on Equity',unit:'%',v:netLCF.map(v=>equity_inv>0?v*1e3/equity_inv*100:0),fmt:(v)=>fPct(v),cls:cls},
   ],yrs);
 
-  // Debt schedule
-  renderTable('dt-debt',[
-    {l:'Opening Debt',unit:'NZDk',v:debtOpen,fmt:fK,cls:()=>''  },
-    {l:'Interest Charge',unit:'NZDk',v:debtInt,fmt:fK,cls:cls},
-    {l:'Repayment',unit:'NZDk',v:debtRepl,fmt:fK,cls:cls},
-    {l:'Closing Debt',unit:'NZDk',v:debtClose,fmt:fK,cls:()=>''  },
-    {l:'DSCR',unit:'x',v:dscrArr,fmt:(v)=>v!=null?fRatio(v):'—',cls:(v)=>v!=null?(v>=1.3?'v-pos':v>=1.1?'v-warn':'v-neg'):''  ,total:true},
-  ],yrs);
+  // Debt schedule — per tranche + totals
+  const debtRows=[];
+  if(senior_debt>0){
+    debtRows.push(
+      {l:'Senior — Opening',unit:'NZDk',v:snrOpen,fmt:fK,cls:()=>'',sub:true},
+      {l:'Senior — Interest',unit:'NZDk',v:snrInt,fmt:fK,cls:cls,sub:true},
+      {l:'Senior — Repayment',unit:'NZDk',v:snrRepl,fmt:fK,cls:cls,sub:true},
+      {l:'Senior — Closing',unit:'NZDk',v:snrClose,fmt:fK,cls:()=>'',subtotal:true},
+    );
+  }
+  if(mezz1_debt>0){
+    debtRows.push(
+      {l:'Mezz 1 — Opening',unit:'NZDk',v:m1Open,fmt:fK,cls:()=>'',sub:true},
+      {l:'Mezz 1 — Interest',unit:'NZDk',v:m1Int,fmt:fK,cls:cls,sub:true},
+      {l:'Mezz 1 — Repayment',unit:'NZDk',v:m1Repl,fmt:fK,cls:cls,sub:true},
+      {l:'Mezz 1 — Closing',unit:'NZDk',v:m1Close,fmt:fK,cls:()=>'',subtotal:true},
+    );
+  }
+  if(mezz2_debt>0){
+    debtRows.push(
+      {l:'Mezz 2 — Opening',unit:'NZDk',v:m2Open,fmt:fK,cls:()=>'',sub:true},
+      {l:'Mezz 2 — Interest',unit:'NZDk',v:m2Int,fmt:fK,cls:cls,sub:true},
+      {l:'Mezz 2 — Repayment',unit:'NZDk',v:m2Repl,fmt:fK,cls:cls,sub:true},
+      {l:'Mezz 2 — Closing',unit:'NZDk',v:m2Close,fmt:fK,cls:()=>'',subtotal:true},
+    );
+  }
+  if(mezz3_debt>0){
+    debtRows.push(
+      {l:'Mezz 3 — Opening',unit:'NZDk',v:m3Open,fmt:fK,cls:()=>'',sub:true},
+      {l:'Mezz 3 — Interest',unit:'NZDk',v:m3Int,fmt:fK,cls:cls,sub:true},
+      {l:'Mezz 3 — Repayment',unit:'NZDk',v:m3Repl,fmt:fK,cls:cls,sub:true},
+      {l:'Mezz 3 — Closing',unit:'NZDk',v:m3Close,fmt:fK,cls:()=>'',subtotal:true},
+    );
+  }
+  debtRows.push(
+    {l:'Total Interest',unit:'NZDk',v:debtInt,fmt:fK,cls:cls},
+    {l:'Total Repayment',unit:'NZDk',v:debtRepl,fmt:fK,cls:cls},
+    {l:'Closing Debt',unit:'NZDk',v:debtClose,fmt:fK,cls:()=>''},
+    {l:'DSCR',unit:'x',v:dscrArr,fmt:(v)=>v!=null?fRatio(v):'—',cls:(v)=>v!=null?(v>=1.3?'v-pos':v>=1.1?'v-warn':'v-neg'):'',total:true},
+  );
+  renderTable('dt-debt',debtRows,yrs);
 
   // P&L
   renderTable('dt-pl',[
@@ -755,15 +1007,18 @@ function calculate(){
 // ── Render a detail accordion table ──
 function renderTable(id,rows,yrs){
   const tbl=document.getElementById(id);
+  tbl.dataset.years=yrs.join(',');
   const head='<thead><tr><th>Metric</th>'+yrs.map(y=>`<th>Y${y}</th>`).join('')+'</tr></thead>';
   const body='<tbody>'+rows.map(r=>{
-    const trCls=r.total?'dt-total':r.sub?'dt-sub':'';
-    const cells=r.v.map((v,i)=>{
+    const trCls=r.total?'dt-total':r.subtotal?'dt-subtotal':r.sub?'dt-sub':'';
+    const cells=r.v.map(v=>{
       const fmtd=r.fmt(v);
       const c=r.cls?r.cls(v):'';
       return`<td class="${c}">${fmtd}</td>`;
     }).join('');
-    return`<tr class="${trCls}"><td>${r.l}${r.unit&&r.unit!=='NZDk'&&r.unit!=='bool'?` <span style="color:#9aa49e;font-size:0.68rem">(${r.unit})</span>`:''}</td>${cells}</tr>`;
+    const labelSafe=r.l.replace(/"/g,'&quot;');
+    const valsSafe=encodeURIComponent(JSON.stringify(r.v));
+    return`<tr class="${trCls} cr" data-label="${labelSafe}" data-unit="${r.unit||''}" data-vals="${valsSafe}"><td>${r.l}${r.unit&&r.unit!=='NZDk'&&r.unit!=='bool'?` <span style="color:#9aa49e;font-size:0.68rem">(${r.unit})</span>`:''}</td>${cells}</tr>`;
   }).join('')+'</tbody>';
   tbl.innerHTML=head+body;
 }
@@ -788,55 +1043,432 @@ function setKPI(valId,tileId,val,suffix,thresholds,isNPV=false){
   else tile.classList.add(val>=thresholds[0]?'good':val>=thresholds[1]?'warn':'bad');
 }
 
-// ── Chart ──
-let chart=null;
-function updateChart(revTotal,opTotal,dsArr,netLCF,life){
-  const labels=Array.from({length:life},(_,i)=>`Y${i+1}`);
-  const toM=arr=>arr.map(v=>+(v/1e3).toFixed(3));
-  let cum=0;
-  const cumFCF=netLCF.map(v=>{cum+=v;return+(cum/1e3).toFixed(3);});
-  const data={labels,datasets:[
-    {label:'Revenue',data:toM(revTotal),backgroundColor:'rgba(26,92,58,0.75)',borderRadius:2,type:'bar',yAxisID:'y',order:2},
-    {label:'OPEX',data:toM(opTotal).map(v=>-v/1e3),backgroundColor:'rgba(107,117,112,0.45)',borderRadius:2,type:'bar',yAxisID:'y',order:2},
-    {label:'Debt Service',data:toM(dsArr).map(v=>-v),backgroundColor:'rgba(200,121,65,0.5)',borderRadius:2,type:'bar',yAxisID:'y',order:2},
-    {label:'Cumulative FCF',data:cumFCF,borderColor:'#4fbe85',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3,type:'line',order:1,yAxisID:'y2'},
-  ]};
-  const opts={responsive:true,maintainAspectRatio:true,interaction:{mode:'index',intersect:false},
-    plugins:{legend:{position:'top',labels:{font:{family:"'DM Sans',sans-serif",size:11},boxWidth:12,padding:12}},
-    tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: NZD ${ctx.parsed.y.toFixed(2)}M`}}},
-    scales:{
-      x:{stacked:true,grid:{display:false},ticks:{font:{size:10},maxTicksLimit:16}},
-      y:{stacked:true,title:{display:true,text:'NZD M/yr',font:{size:10}},grid:{color:'rgba(14,18,16,0.06)'},ticks:{font:{size:10}}},
-      y2:{position:'right',title:{display:true,text:'Cum. FCF (NZD M)',font:{size:10}},grid:{drawOnChartArea:false},ticks:{font:{size:10}}},
-    }};
-  if(chart){chart.data=data;chart.options=opts;chart.update();}
-  else chart=new Chart(document.getElementById('cashflowChart'),{type:'bar',data,options:opts});
+// ── Charts ──
+let chartU=null, chartL=null;
+
+function fmtK(v){return(v/1e3).toFixed(1)+'k';}
+
+function buildChartCfg(datasets, labels, y1Title, y2Title){
+  return {
+    type:'bar',
+    data:{labels, datasets},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:'index', intersect:false},
+      plugins:{
+        legend:{position:'top', labels:{font:{family:"'DM Sans',sans-serif", size:10}, boxWidth:10, padding:8, usePointStyle:true}},
+        tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: NZD ${Math.round(ctx.parsed.y).toLocaleString()}k`}},
+      },
+      scales:{
+        x:{stacked:true, grid:{display:false}, ticks:{font:{size:9}, maxTicksLimit:14}},
+        y:{stacked:true, title:{display:true, text:y1Title, font:{size:9}}, grid:{color:'rgba(14,18,16,0.06)'}, ticks:{font:{size:9}, callback:v=>v.toLocaleString()}},
+        y2:{position:'right', title:{display:true, text:y2Title, font:{size:9}}, grid:{drawOnChartArea:false}, ticks:{font:{size:9}, callback:v=>v.toLocaleString()}},
+      },
+    },
+  };
 }
+
+function applyChart(ref, canvasId, datasets, labels, y1Title, y2Title){
+  if(ref) ref.destroy();
+  const cfg=buildChartCfg(datasets, labels, y1Title, y2Title);
+  return new Chart(document.getElementById(canvasId), cfg);
+}
+
+function updateCharts(revTotal,opTotal,annCapex,debtInt,debtRepl,cashTax,netUCF,netLCF,life){
+  const labels=Array.from({length:life},(_,i)=>`Y${i+1}`);
+
+  // All arrays are in NZDk — use directly for $000s axis
+  const neg=arr=>arr.map(v=>-v);
+
+  // Cumulative lines (NZDk)
+  let cu=0, cl=0;
+  const cumU=netUCF.map(v=>{cu+=v; return Math.round(cu);});
+  const cumL=netLCF.map(v=>{cl+=v; return Math.round(cl);});
+
+  // ── Chart 1: Pre-tax unlevered ──
+  const datasetsU=[
+    {label:'Revenue',           data:revTotal.map(Math.round),     backgroundColor:'rgba(26,92,58,0.78)',   borderRadius:2, type:'bar',  yAxisID:'y',  order:2, stack:'s'},
+    {label:'OPEX',              data:neg(opTotal).map(Math.round), backgroundColor:'rgba(107,117,112,0.5)', borderRadius:2, type:'bar',  yAxisID:'y',  order:2, stack:'s'},
+    {label:'Replacements',      data:annCapex.map(Math.round),     backgroundColor:'rgba(200,121,65,0.6)',  borderRadius:2, type:'bar',  yAxisID:'y',  order:2, stack:'s'},
+    {label:'Cum. Unlevered FCF',data:cumU, borderColor:'#4fbe85', backgroundColor:'transparent', borderWidth:2, pointRadius:0, tension:0.3, type:'line', yAxisID:'y2', order:1},
+  ];
+
+  // ── Chart 2: Post-tax levered ──
+  const debtSvc=debtInt.map((v,i)=>Math.round(v+debtRepl[i])); // both negative NZDk
+  const taxNeg=cashTax.map(v=>-Math.round(v));                  // cashTax positive → negate
+
+  const datasetsL=[
+    {label:'Revenue',         data:revTotal.map(Math.round),     backgroundColor:'rgba(26,92,58,0.78)',   borderRadius:2, type:'bar',  yAxisID:'y',  order:2, stack:'s'},
+    {label:'OPEX',            data:neg(opTotal).map(Math.round), backgroundColor:'rgba(107,117,112,0.5)', borderRadius:2, type:'bar',  yAxisID:'y',  order:2, stack:'s'},
+    {label:'Debt Service',    data:debtSvc,                      backgroundColor:'rgba(200,121,65,0.7)',  borderRadius:2, type:'bar',  yAxisID:'y',  order:2, stack:'s'},
+    {label:'Tax',             data:taxNeg,                       backgroundColor:'rgba(185,64,64,0.55)', borderRadius:2, type:'bar',  yAxisID:'y',  order:2, stack:'s'},
+    {label:'Replacements',    data:annCapex.map(Math.round),     backgroundColor:'rgba(107,93,224,0.45)',borderRadius:2, type:'bar',  yAxisID:'y',  order:2, stack:'s'},
+    {label:'Cum. Levered FCF',data:cumL, borderColor:'#4fbe85', backgroundColor:'transparent', borderWidth:2, pointRadius:0, tension:0.3, type:'line', yAxisID:'y2', order:1},
+  ];
+
+  chartU=applyChart(chartU,'chartUnlevered',datasetsU,labels,"NZD '000s / yr","Cum. NZD '000s");
+  chartL=applyChart(chartL,'chartLevered',  datasetsL,labels,"NZD '000s / yr","Cum. NZD '000s");
+}
+
+// ── Scenario presets (from Excel Sensitivities tab) ──
+const PRESETS = {
+  base: {
+    pvSize:25,pvYield:1550,pvCost:1.41,systemAvail:97.7,degradation:0.4,projectLife:30,invReplYear:15,
+    battMW:0,battMWh:0,battCost:600,
+    retailFraction:30,retailPrice:320,retailDurationN:10,
+    ppaFraction:70,ppaPrice:125,ppaDurationN:8,
+    cpi:2.1,firRateN:20000,sirRateN:5000,
+    gridCapexN:1800,devFeeN:700,
+    omCost:8,insurance:9.3,gridOpexN:50,landN:25,siteElecN:10,marketOpsFixedN:0,opexEsc:2.1,
+    gearing:68,debtRate:6.25,debtTenor:15,
+    mezz1Gearing:0,mezz1Rate:6.8,mezz1Tenor:6,
+    mezz2Gearing:0,mezz2Rate:3.0,mezz2Tenor:15,
+    mezz3Gearing:0,mezz3Rate:3.0,mezz3Tenor:15,
+    wacc:9,taxRate:17.5,
+  },
+  large: {
+    pvSize:130,pvYield:1550,pvCost:1.33,systemAvail:97.7,degradation:0.4,projectLife:30,invReplYear:15,
+    battMW:0,battMWh:0,battCost:600,
+    retailFraction:30,retailPrice:320,retailDurationN:10,
+    ppaFraction:70,ppaPrice:125,ppaDurationN:8,
+    cpi:2.1,firRateN:20000,sirRateN:5000,
+    gridCapexN:30000,devFeeN:2000,
+    omCost:3.1,insurance:5.3,gridOpexN:1200,landN:25,siteElecN:10,marketOpsFixedN:0,opexEsc:2.1,
+    gearing:75,debtRate:6.25,debtTenor:15,
+    mezz1Gearing:0,mezz1Rate:6.8,mezz1Tenor:6,
+    mezz2Gearing:0,mezz2Rate:3.0,mezz2Tenor:15,
+    mezz3Gearing:0,mezz3Rate:3.0,mezz3Tenor:15,
+    wacc:9,taxRate:17.5,
+  },
+  merch25: {
+    pvSize:25,pvYield:1550,pvCost:1.41,systemAvail:97.7,degradation:0.4,projectLife:30,invReplYear:15,
+    battMW:0,battMWh:0,battCost:600,
+    retailFraction:0,retailPrice:320,retailDurationN:10,
+    ppaFraction:0,ppaPrice:125,ppaDurationN:8,
+    cpi:2.1,firRateN:20000,sirRateN:5000,
+    gridCapexN:1800,devFeeN:700,
+    omCost:8,insurance:9.3,gridOpexN:50,landN:25,siteElecN:10,marketOpsFixedN:0,opexEsc:2.1,
+    gearing:68,debtRate:6.25,debtTenor:15,
+    mezz1Gearing:0,mezz1Rate:6.8,mezz1Tenor:6,
+    mezz2Gearing:0,mezz2Rate:3.0,mezz2Tenor:15,
+    mezz3Gearing:0,mezz3Rate:3.0,mezz3Tenor:15,
+    wacc:9,taxRate:17.5,
+  },
+  merch130: {
+    pvSize:130,pvYield:1550,pvCost:1.33,systemAvail:97.7,degradation:0.4,projectLife:30,invReplYear:15,
+    battMW:0,battMWh:0,battCost:600,
+    retailFraction:0,retailPrice:320,retailDurationN:10,
+    ppaFraction:0,ppaPrice:125,ppaDurationN:8,
+    cpi:2.1,firRateN:20000,sirRateN:5000,
+    gridCapexN:30000,devFeeN:2000,
+    omCost:3.1,insurance:5.3,gridOpexN:1200,landN:25,siteElecN:10,marketOpsFixedN:0,opexEsc:2.1,
+    gearing:75,debtRate:6.25,debtTenor:15,
+    mezz1Gearing:0,mezz1Rate:6.8,mezz1Tenor:6,
+    mezz2Gearing:0,mezz2Rate:3.0,mezz2Tenor:15,
+    mezz3Gearing:0,mezz3Rate:3.0,mezz3Tenor:15,
+    wacc:9,taxRate:17.5,
+  },
+};
+const NUM_ONLY=new Set(['gridCapexN','devFeeN','gridOpexN','landN','siteElecN','firRateN','sirRateN','customPriceN','retailDurationN','ppaDurationN','marketOpsFixedN']);
+function loadPreset(key){
+  const p=PRESETS[key]; if(!p)return;
+  Object.entries(p).forEach(([k,v])=>{
+    if(typeof v!=='number')return;
+    if(NUM_ONLY.has(k)){const el=document.getElementById(k);if(el)el.value=v;}
+    else{const r=document.getElementById(k),n=document.getElementById(k+'N');if(r)r.value=v;if(n)n.value=v;}
+  });
+  document.querySelectorAll('.stab').forEach(b=>b.classList.toggle('active',b.dataset.scenario===key));
+  calculate();
+}
+function clearActiveTab(){document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));}
+document.querySelectorAll('.stab').forEach(b=>b.addEventListener('click',()=>loadPreset(b.dataset.scenario)));
 
 // ── Input sync ──
 const pairs=[
-  ['pvSize','pvSizeN'],['pvYield','pvYieldN'],['pvCost','pvCostN'],
+  ['pvSize','pvSizeN'],['pvYield','pvYieldN'],['systemAvail','systemAvailN'],['pvCost','pvCostN'],
   ['degradation','degradationN'],['projectLife','projectLifeN'],['invReplYear','invReplYearN'],
   ['battMW','battMWN'],['battMWh','battMWhN'],['battCost','battCostN'],
-  ['ppaFraction','ppaFractionN'],['ppaPrice','ppaPriceN'],['retailPrice','retailPriceN'],['cpi','cpiN'],
+  ['retailFraction','retailFractionN'],['retailPrice','retailPriceN'],
+  ['ppaFraction','ppaFractionN'],['ppaPrice','ppaPriceN'],['cpi','cpiN'],
   ['omCost','omCostN'],['insurance','insuranceN'],['opexEsc','opexEscN'],
   ['gearing','gearingN'],['debtRate','debtRateN'],['debtTenor','debtTenorN'],
+  ['mezz1Gearing','mezz1GearingN'],['mezz1Rate','mezz1RateN'],['mezz1Tenor','mezz1TenorN'],
+  ['mezz2Gearing','mezz2GearingN'],['mezz2Rate','mezz2RateN'],['mezz2Tenor','mezz2TenorN'],
+  ['mezz3Gearing','mezz3GearingN'],['mezz3Rate','mezz3RateN'],['mezz3Tenor','mezz3TenorN'],
   ['wacc','waccN'],['taxRate','taxRateN'],
 ];
 pairs.forEach(([r,n])=>{
   const re=document.getElementById(r),ne=document.getElementById(n);
   if(!re||!ne)return;
-  re.addEventListener('input',()=>{ne.value=re.value;calculate();});
-  ne.addEventListener('input',()=>{if(re)re.value=ne.value;calculate();});
+  re.addEventListener('input',()=>{ne.value=re.value;clearActiveTab();calculate();});
+  ne.addEventListener('input',()=>{if(re)re.value=ne.value;clearActiveTab();calculate();});
 });
-['gridCapexN','devFeeN','gridOpexN','landN','siteElecN','firRateN','sirRateN','customPriceN'].forEach(id=>{
+['gridCapexN','devFeeN','gridOpexN','landN','siteElecN','firRateN','sirRateN','customPriceN','retailDurationN','ppaDurationN','marketOpsFixedN'].forEach(id=>{
   const el=document.getElementById(id);
-  if(el) el.addEventListener('input',calculate);
+  if(el) el.addEventListener('input',()=>{clearActiveTab();calculate();});
 });
 document.getElementById('priceScenario').addEventListener('change',function(){
   document.getElementById('customPriceRow').style.display=this.value==='custom'?'block':'none';
   calculate();
 });
+
+// ── Excel download ──
+function setCellValue(xml, ref, val) {
+  const re = new RegExp(`(<c [^>]*\\br="${ref}"[^>]*>)([\\s\\S]*?)(</c>)`, 'g');
+  return xml.replace(re, (_, open, inner, close) => {
+    inner = inner.replace(/<f[^/]*\/>/g, '').replace(/<f[^>]*>[\s\S]*?<\/f>/g, '');
+    const openFixed = open.replace(/\s+t="s"/, '');
+    if (/<v[\s>]/.test(inner)) {
+      inner = inner.replace(/<v[^>]*>[\s\S]*?<\/v>/, `<v>${val}</v>`);
+    } else {
+      inner = `<v>${val}</v>`;
+    }
+    return openFixed + inner + close;
+  });
+}
+
+async function downloadExcel() {
+  const btn = document.getElementById('btnDownloadExcel');
+  btn.textContent = 'Preparing…'; btn.disabled = true;
+  try {
+    const resp = await fetch('excelmodel/FZCL_Commercial_Model_v3_2_1.xlsx');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} — make sure dev server is running from project root`);
+    const zip = await JSZip.loadAsync(await resp.arrayBuffer());
+    let xml = await zip.file('xl/worksheets/sheet3.xml').async('string');
+
+    const g = id => parseFloat(document.getElementById(id).value) || 0;
+    const pvSize = g('pvSizeN'), pvCost = g('pvCostN');
+    const opescVal = g('opexEscN') / 100;
+
+    const updates = {
+      D37:  pvSize * 1000,                    // PV size kWp
+      D38:  g('pvYieldN'),                     // PV yield kWh/kWp/yr
+      D39:  g('systemAvailN') / 100,           // System availability
+      D40:  g('degradationN') / 100,           // Degradation/yr
+      D44:  g('battMWN') * 1000,               // Battery power kW
+      D45:  g('battMWhN') * 1000,              // Battery capacity kWh
+      D57:  g('retailFractionN') / 100,        // Local retail fraction
+      D58:  g('ppaFractionN') / 100,           // PPA fraction
+      D66:  g('retailPriceN'),                 // Retail price yr1
+      D67:  g('cpiN') / 100,                   // Retail price escalation
+      D69:  g('retailDurationN'),              // Retail duration yrs
+      D72:  g('ppaPriceN'),                    // PPA price yr1
+      D73:  g('cpiN') / 100,                   // PPA price escalation
+      D75:  g('ppaDurationN'),                 // PPA duration yrs
+      D108: pvCost,                            // PV EPC NZD/Wp
+      D109: g('battCostN'),                    // Battery cost NZD/kWh
+      D111: g('gridCapexN'),                   // Grid capex NZDk
+      D112: g('devFeeN'),                      // Dev fee NZDk
+      D132: g('omCostN') * pvSize,             // O&M NZDk/yr
+      D133: opescVal,                          // O&M escalation
+      D137: g('landN'),                        // Land rental NZDk
+      D138: opescVal,                          // Land escalation
+      D141: g('insuranceN') / (pvCost * 1000), // Insurance rate (fraction of EPC)
+      D150: g('gridOpexN'),                    // Grid opex NZDk
+      D151: opescVal,                          // Grid escalation
+      D154: g('siteElecN'),                    // Site electricity NZDk
+      D155: opescVal,                          // Site escalation
+      D165: g('debtRateN') / 100,             // Senior interest rate
+      D166: g('debtTenorN'),                  // Senior tenor
+      D167: g('gearingN') / 100,              // Senior gearing
+      D173: g('mezz1RateN') / 100,            // Mezz 1 interest rate
+      D174: g('mezz1TenorN'),                 // Mezz 1 tenor
+      D175: g('mezz1GearingN') / 100,         // Mezz 1 gearing
+      D181: g('mezz2RateN') / 100,            // Mezz 2 interest rate
+      D182: g('mezz2TenorN'),                 // Mezz 2 tenor
+      D183: g('mezz2GearingN') / 100,         // Mezz 2 gearing
+      D189: g('mezz3RateN') / 100,            // Mezz 3 interest rate
+      D190: g('mezz3TenorN'),                 // Mezz 3 tenor
+      D191: g('mezz3GearingN') / 100,         // Mezz 3 gearing
+      D202: g('invReplYearN'),                // Inverter replacement yr
+      D208: g('taxRateN') / 100,              // Tax rate
+      D224: g('projectLifeN'),                // Project life
+      D226: g('cpiN') / 100,                  // CPI/inflation
+    };
+
+    for (const [ref, val] of Object.entries(updates)) {
+      xml = setCellValue(xml, ref, val);
+    }
+
+    zip.file('xl/worksheets/sheet3.xml', xml);
+    const out = await zip.generateAsync({ type: 'arraybuffer', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+    const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `FZCL_Commercial_Model_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  } catch(e) {
+    console.error(e);
+    alert('Download failed: ' + e.message);
+  } finally {
+    btn.textContent = '↓ Download Excel'; btn.disabled = false;
+  }
+}
+document.getElementById('btnDownloadExcel').addEventListener('click', downloadExcel);
+
+// ── Row chart panel ──
+const SERIES_PALETTE=['#4fbe85','#c87941','#6b5de0','#4a9fd4','#e05d6b','#f0b840','#9aa49e','#2d8c5a'];
+let rowChart=null, rowSeries=[], panelYears=[];
+
+function unitLabel(u){ return u==='NZDk'?'NZD $000s':u==='bool'?'':u||''; }
+
+function renderLegend(){
+  const leg=document.getElementById('rpLegend');
+  if(rowSeries.length===1){
+    const s=rowSeries[0];
+    const ul=unitLabel(s.unit);
+    leg.innerHTML=`<span class="rp-chip"><span class="rp-chip-dot" style="--chip-color:${s.color}"></span>${s.label}${ul?' <span style="color:#9aa49e;font-size:0.65rem">(${ul})</span>':''}</span>`;
+  } else {
+    leg.innerHTML=rowSeries.map((s,i)=>
+      `<span class="rp-chip"><span class="rp-chip-dot" style="--chip-color:${s.color}"></span>${s.label}<button class="rp-chip-x" data-idx="${i}" title="Remove">×</button></span>`
+    ).join('');
+  }
+}
+
+function buildRowChart(){
+  if(rowChart)rowChart.destroy();
+  const multi=rowSeries.length>1;
+  const pts=panelYears.length>20?0:3;
+  // Stacked bars only make sense for financial (NZDk) multi-series; otherwise use lines
+  const useStack=multi&&rowSeries.every(s=>s.unit==='NZDk');
+  const datasets=rowSeries.map((s,i)=>{
+    if(!multi){
+      const nums=s.vals.filter(v=>v!==null&&isFinite(v));
+      const allNeg=nums.length>0&&nums.every(v=>v<=0);
+      const allPos=nums.length>0&&nums.every(v=>v>=0);
+      const col=allNeg?'#b94040':s.color;
+      // Non-financial always-positive data (e.g. MWh generation) → column chart
+      if(allPos&&s.unit!=='NZDk'){
+        return{type:'bar',label:s.label,data:s.vals,backgroundColor:s.color+'cc',
+          borderColor:s.color,borderWidth:0,borderRadius:2,spanGaps:false};
+      }
+      return{type:'line',label:s.label,data:s.vals,borderColor:col,
+        backgroundColor:allNeg?'rgba(185,64,64,0.08)':'rgba(79,190,133,0.10)',
+        borderWidth:1.5,fill:true,pointRadius:pts,pointHoverRadius:5,tension:0.2,spanGaps:false};
+    }
+    if(useStack&&s.isTotal){
+      return{type:'line',label:s.label,data:s.vals,borderColor:s.color,backgroundColor:'transparent',
+        borderWidth:2,fill:false,pointRadius:pts,pointHoverRadius:5,tension:0.1,spanGaps:false,order:0};
+    }
+    if(useStack){
+      return{type:'bar',label:s.label,data:s.vals,backgroundColor:s.color+'bb',borderColor:s.color,
+        borderWidth:0,stack:'s1',spanGaps:false,order:1};
+    }
+    // Non-financial multi-series (MWh, %, etc.) → plain lines
+    return{type:'line',label:s.label,data:s.vals,borderColor:s.color,backgroundColor:'transparent',
+      borderWidth:1.5,fill:false,pointRadius:pts,pointHoverRadius:5,tension:0.2,spanGaps:false};
+  });
+  rowChart=new Chart(document.getElementById('rpCanvas'),{
+    type:'bar',
+    data:{labels:panelYears.map(y=>`Y${y}`),datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:multi,position:'top',labels:{font:{size:9},boxWidth:10,padding:8}},
+        tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>{
+          const v=ctx.parsed.y;
+          if(v===null||v===undefined)return null;
+          const ul=unitLabel(rowSeries[ctx.datasetIndex]?.unit||'');
+          return` ${ctx.dataset.label}: ${v.toLocaleString(undefined,{maximumFractionDigits:2})}${ul?' '+ul:''}`;
+        }}},
+      },
+      scales:{
+        x:{stacked:multi,grid:{display:false},ticks:{font:{size:9},maxTicksLimit:14}},
+        y:{stacked:multi,grid:{color:'rgba(14,18,16,0.06)'},ticks:{font:{size:9},callback:v=>v.toLocaleString()}},
+      },
+    },
+  });
+}
+
+function openPanel(series, years){
+  rowSeries=series;
+  panelYears=years;
+  renderLegend();
+  buildRowChart();
+  document.getElementById('rowPanel').classList.add('open');
+}
+
+function closePanel(){
+  document.getElementById('rowPanel').classList.remove('open');
+  document.querySelectorAll('.detail-table tr.row-active, .summary-table tr.row-active')
+    .forEach(r=>r.classList.remove('row-active'));
+  rowSeries=[];
+}
+
+// Legend chip × to remove a series
+document.getElementById('rpLegend').addEventListener('click',e=>{
+  const btn=e.target.closest('.rp-chip-x');
+  if(!btn)return;
+  const idx=+btn.dataset.idx;
+  rowSeries.splice(idx,1);
+  if(rowSeries.length===0){closePanel();return;}
+  rowSeries.forEach((s,i)=>s.color=SERIES_PALETTE[i%SERIES_PALETTE.length]);
+  renderLegend();
+  buildRowChart();
+});
+
+document.getElementById('rpClose').addEventListener('click',closePanel);
+
+// Row click — single row chart (works on detail-table and summary-table)
+document.addEventListener('click',e=>{
+  // Accordion chart button
+  const chartBtn=e.target.closest('.accord-chart-btn');
+  if(chartBtn){
+    e.stopPropagation();
+    const tbl=document.getElementById(chartBtn.dataset.tbl);
+    if(!tbl)return;
+    const years=tbl.dataset.years.split(',').map(Number);
+    const allRows=[...tbl.querySelectorAll('tbody tr.cr')];
+    // Use the unit of the first total row; fall back to most-common unit across all rows
+    const totalRow=allRows.find(tr=>tr.classList.contains('dt-total'));
+    const dominantUnit=totalRow ? totalRow.dataset.unit : (() => {
+      const counts={};
+      allRows.forEach(tr=>{const u=tr.dataset.unit||'';counts[u]=(counts[u]||0)+1;});
+      return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
+    })();
+    const series=allRows
+      .filter(tr=>(tr.dataset.unit||'')===dominantUnit)
+      .map((tr,i)=>({
+        label:tr.dataset.label||'—',
+        unit:tr.dataset.unit||'',
+        vals:JSON.parse(decodeURIComponent(tr.dataset.vals)),
+        color:SERIES_PALETTE[i%SERIES_PALETTE.length],
+        isTotal:tr.classList.contains('dt-total'),
+      }));
+    document.querySelectorAll('.detail-table tr.row-active, .summary-table tr.row-active')
+      .forEach(r=>r.classList.remove('row-active'));
+    openPanel(series,years);
+    return;
+  }
+
+  // Individual row click
+  const tr=e.target.closest('.detail-table tbody tr.cr, .summary-table tbody tr.cr');
+  if(!tr)return;
+  if(tr.classList.contains('row-active')){
+    closePanel();
+    return;
+  }
+  document.querySelectorAll('.detail-table tr.row-active, .summary-table tr.row-active')
+    .forEach(r=>r.classList.remove('row-active'));
+  tr.classList.add('row-active');
+  // Find years from nearest table with data-years
+  const tbl=tr.closest('table');
+  const years=(tbl?.dataset?.years||'').split(',').map(Number).filter(Boolean);
+  openPanel([{
+    label:tr.dataset.label,
+    unit:tr.dataset.unit,
+    vals:JSON.parse(decodeURIComponent(tr.dataset.vals)),
+    color:SERIES_PALETTE[0],
+  }], years);
+});
+
+// ── Sticky KPI bar ──
+new IntersectionObserver(([e])=>{
+  document.getElementById('kpiBar').classList.toggle('kpi-compact',!e.isIntersecting);
+},{rootMargin:'-57px 0px 0px 0px'}).observe(document.getElementById('kpiSentinel'));
 
 calculate();
 </script>
