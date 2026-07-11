@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /solar-commercial-model.html
+
+Sitemap: https://future-zero.com/sitemap.xml
