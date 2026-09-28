@@ -111,15 +111,18 @@
   #portfolio h2 { color: var(--white); }
   #portfolio h2 em { color: var(--green-accent); }
   #portfolio .lead { color: rgba(255,255,255,0.5); }
-  .projects { margin-top: 3rem; display: flex; flex-direction: column; }
-  .project-row { display: grid; grid-template-columns: 3rem 1fr auto; gap: 2rem; align-items: baseline; padding: 1.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: default; transition: padding-left 0.2s; }
-  .project-row:hover { padding-left: 0.5rem; }
-  .project-num { font-family: var(--serif); font-size: 0.85rem; color: rgba(255,255,255,0.25); }
-  .project-info h3 { font-family: var(--serif); font-size: 1.35rem; color: var(--white); margin-bottom: 0.35rem; }
-  .project-info p { font-size: 0.875rem; color: rgba(255,255,255,0.45); line-height: 1.6; font-weight: 300; }
-  .project-tag { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-accent); white-space: nowrap; align-self: flex-start; margin-top: 0.3rem; }
-  .project-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; }
-  .project-date { font-size: 0.7rem; font-weight: 400; color: rgba(255,255,255,0.35); white-space: nowrap; }
+  .timeline { position: relative; margin-top: 3.5rem; }
+  .timeline::before { content: ''; position: absolute; left: 50%; top: 0.5rem; bottom: 0.5rem; width: 1px; background: rgba(255,255,255,0.12); }
+  .timeline-item { display: flex; align-items: flex-start; padding-bottom: 3.5rem; }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-content { width: calc(50% - 1.75rem); }
+  .timeline-content.timeline-left { text-align: right; padding-right: 1.75rem; }
+  .timeline-content.timeline-right { text-align: left; padding-left: 1.75rem; }
+  .timeline-dot { flex-shrink: 0; width: 0.9rem; height: 0.9rem; border-radius: 50%; background: var(--green-accent); box-shadow: 0 0 0 5px rgba(79,190,133,0.15); margin-top: 0.45rem; position: relative; z-index: 1; }
+  .timeline-date { display: block; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green-accent); margin-bottom: 0.5rem; }
+  .timeline-content h3 { font-family: var(--serif); font-size: 1.35rem; color: var(--white); margin-bottom: 0.5rem; }
+  .timeline-content p { font-size: 0.875rem; color: rgba(255,255,255,0.45); line-height: 1.6; font-weight: 300; margin-bottom: 0.75rem; }
+  .project-tag { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); white-space: nowrap; }
 
   #platforms { background: var(--white); }
   .platforms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
@@ -193,8 +196,12 @@
   @media (max-width: 600px) {
     section { padding: 4rem 5vw; }
     .hero-left { padding: 4rem 5vw 2rem; }
-    .project-row { grid-template-columns: 2rem 1fr; }
-    .project-meta { display: none; }
+    .timeline::before { left: 0.45rem; }
+    .timeline-item { display: block; position: relative; padding-left: 2rem; padding-bottom: 3rem; }
+    .timeline-dot { position: absolute; left: 0; top: 0.35rem; margin-top: 0; }
+    .timeline-content { width: 100%; }
+    .timeline-content.timeline-left, .timeline-content.timeline-right { text-align: left; padding: 0; }
+    .timeline-content:empty { display: none; }
   }
 </style>
 </head>
@@ -365,15 +372,43 @@
 <section id="portfolio">
   <div class="section-label fade-up">Portfolio</div>
   <h2 class="fade-up">Real delivery, at scale, <em>across the world.</em></h2>
-  <p class="lead fade-up">Selected career highlights: from New Zealand's first utility-scale battery to consumer standards protecting half a million UK homes.</p>
-  <div class="projects">
-    <div class="project-row fade-up"><span class="project-num">01</span><div class="project-info"><h3>Grid Operability for Clean Power</h3><p>From using domestic batteries to provide frequency reserve, to designing island microgrids that run on 100% renewables across the Pacific: a career built on making clean energy systems actually work at scale.</p></div><div class="project-meta"><span class="project-date">2025</span><span class="project-tag">Operability · Global</span></div></div>
-    <div class="project-row fade-up"><span class="project-num">02</span><div class="project-info"><h3>Rotohiko Battery, New Zealand</h3><p>New Zealand's first utility-scale battery at 35MW/35MWh. Led development from concept through financial close: commercial modelling, engineering design, OEM selection, procurement and risk assessment.</p></div><div class="project-meta"><span class="project-date">2019–2022</span><span class="project-tag">BESS · NZ</span></div></div>
-    <div class="project-row fade-up"><span class="project-num">03</span><div class="project-info"><h3>SolarZero Virtual Power Plant</h3><p>Led replatforming of 15,000 residential batteries onto machine learning, enabling 99% of customers to reach within $1/month of optimal energy bill.</p></div><div class="project-meta"><span class="project-date">2021–2022</span><span class="project-tag">VPP · NZ</span></div></div>
-    <div class="project-row fade-up"><span class="project-num">04</span><div class="project-info"><h3>Pacific Islands Microgrids</h3><p>Lead bid manager on $50m+ pipeline of microgrid projects with 80% bid success rate, including 7 islands in Tonga, 4 sites in the Solomon Islands, and major projects in Tuvalu, Nauru, Palau, Vanuatu, Cook Islands, Micronesia and Kiribati.</p></div><div class="project-meta"><span class="project-date">2017–2022</span><span class="project-tag">Microgrid · Pacific</span></div></div>
-    <div class="project-row fade-up"><span class="project-num">05</span><div class="project-info"><h3>MCS Self-Consumption Standard, UK</h3><p>A standard developed with Loughborough University and MCS, now applied to every solar and battery quote in the UK, protecting 500,000+ households from misselling since 2019.</p></div><div class="project-meta"><span class="project-date">2017–2019</span><span class="project-tag">Policy · UK</span></div></div>
-    <div class="project-row fade-up"><span class="project-num">06</span><div class="project-info"><h3>IKEA &amp; Kingfisher: First UK battery launches</h3><p>Delivered some of the UK's first residential and commercial battery-solar products. 50% of IKEA home solar sales, and the UK's first fully decarbonised retail site in 2018.</p></div><div class="project-meta"><span class="project-date">2015–2019</span><span class="project-tag">Storage · UK</span></div></div>
-    <div class="project-row fade-up"><span class="project-num">07</span><div class="project-info"><h3>Project PARC, Kenya</h3><p>Senior adviser since founding. Commercial models for high-power microgrids across East Africa, supporting multi-million-dollar investments in decentralised systems that fund water and farming infrastructure for local communities.</p></div><div class="project-meta"><span class="project-date">2021–present</span><span class="project-tag">Microgrid · Africa</span></div></div>
+  <p class="lead fade-up">Selected career highlights: from New Zealand's first utility-scale battery to consumer standards protecting UK homes.</p>
+  <div class="timeline">
+    <div class="timeline-item fade-up">
+      <div class="timeline-content timeline-left"><span class="timeline-date">2015–2019</span><h3>IKEA &amp; Kingfisher: First UK battery launches</h3><p>Delivered some of the UK's first residential and commercial battery-solar products. 50% of IKEA home solar sales, and the UK's first fully decarbonised retail site in 2018.</p><span class="project-tag">Storage · UK</span></div>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content timeline-right"></div>
+    </div>
+    <div class="timeline-item fade-up">
+      <div class="timeline-content timeline-left"></div>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content timeline-right"><span class="timeline-date">2017–2022</span><h3>Pacific Islands Microgrids</h3><p>Lead bid manager on $50m+ pipeline of microgrid projects with 80% bid success rate, including 7 islands in Tonga, 4 sites in the Solomon Islands, and major projects in Tuvalu, Nauru, Palau, Vanuatu, Cook Islands, Micronesia and Kiribati.</p><span class="project-tag">Microgrid · Pacific</span></div>
+    </div>
+    <div class="timeline-item fade-up">
+      <div class="timeline-content timeline-left"><span class="timeline-date">2017–2019</span><h3>MCS Self-Consumption Standard, UK</h3><p>A standard developed with Loughborough University and MCS, now applied to every solar and battery quote in the UK, protecting 500,000+ households from misselling since 2019.</p><span class="project-tag">Policy · UK</span></div>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content timeline-right"></div>
+    </div>
+    <div class="timeline-item fade-up">
+      <div class="timeline-content timeline-left"></div>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content timeline-right"><span class="timeline-date">2019–2022</span><h3>Rotohiko Battery, New Zealand</h3><p>New Zealand's first utility-scale battery at 35MW/35MWh. Led development from concept through financial close: commercial modelling, engineering design, OEM selection, procurement and risk assessment.</p><span class="project-tag">BESS · NZ</span></div>
+    </div>
+    <div class="timeline-item fade-up">
+      <div class="timeline-content timeline-left"><span class="timeline-date">2021–2022</span><h3>SolarZero Virtual Power Plant</h3><p>Led replatforming of 15,000 residential batteries onto machine learning, enabling 95% of customers to reach within $5/month of optimal energy bill.</p><span class="project-tag">VPP · NZ</span></div>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content timeline-right"></div>
+    </div>
+    <div class="timeline-item fade-up">
+      <div class="timeline-content timeline-left"></div>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content timeline-right"><span class="timeline-date">2021–present</span><h3>Project PARC, Kenya</h3><p>Senior adviser since founding. Commercial models for high-power microgrids across East Africa, supporting multi-million-dollar investments in decentralised systems that fund water and farming infrastructure for local communities.</p><span class="project-tag">Microgrid · Africa</span></div>
+    </div>
+    <div class="timeline-item fade-up">
+      <div class="timeline-content timeline-left"><span class="timeline-date">2025</span><h3>Grid Operability for Clean Power</h3><p>Senior operability lead within the GB National Electricity System Operator.</p><span class="project-tag">Operability · Global</span></div>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content timeline-right"></div>
+    </div>
   </div>
 </section>
 
